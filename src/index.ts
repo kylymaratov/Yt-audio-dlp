@@ -106,5 +106,3 @@ export const getVideoByHtml = async (
         throw e;
     }
 };
-
-getVideoById("hl7_pm4lnP0").then((res) => console.log(res));
