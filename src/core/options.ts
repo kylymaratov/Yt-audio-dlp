@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { TOptions } from "@/types/options";
 import { TVideo } from "@/types/video-details";
 
@@ -23,9 +23,11 @@ export const validateByOptions = async (
         for (let f of video.adaptiveFormats) {
             try {
                 if (!f.url) continue;
-                await axios.head(f.url, { timeout: 5000 });
+                const response = await axios.head(f.url, { timeout: 5000 });
                 work_formats.push(f);
+                console.log(response.status);
             } catch (e) {
+                console.log((e as AxiosError).response?.status);
                 continue;
             }
         }
