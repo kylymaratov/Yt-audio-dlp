@@ -9,7 +9,7 @@ export const youtubeUrls = {
 };
 
 export const defautlOptions: TOptions = {
-    format: "audio",
+    format: "all",
     checkWorkingLinks: true,
 };
 
