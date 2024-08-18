@@ -6,6 +6,7 @@ export const youtubeUrls = {
     base: "https://www.youtube.com",
     main: "https://www.youtube.com/watch?v=",
     mobile: "https://youtu.be/",
+    androidPlayer: "https://youtubei.googleapis.com/youtubei/v1/player",
 };
 
 export const defautlOptions: TOptions = {

@@ -107,7 +107,7 @@ export const fetchAndroidJsonPlayer = async (
         };
 
         const response = await axios<TPlayerResponse>(
-            "https://youtubei.googleapis.com/youtubei/v1/player",
+            youtubeUrls.androidPlayer,
             config
         );
 
