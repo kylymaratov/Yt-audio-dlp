@@ -1,4 +1,4 @@
-import { TOptions } from "@/types/options";
+import { TOptions } from "../types/options";
 
 export const streamingDataFormats = ["formats"];
 

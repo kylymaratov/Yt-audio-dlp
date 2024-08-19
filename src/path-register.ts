@@ -1,5 +1,7 @@
 import { addAliases } from "module-alias";
 
-addAliases({
+const alias = addAliases({
     "@": __dirname + "",
 });
+
+export default alias;

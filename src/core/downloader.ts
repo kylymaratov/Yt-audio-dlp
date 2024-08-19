@@ -8,9 +8,9 @@ import { HTML5_PLAYER_REGEX } from "@/regexp/regexp";
 import axios, { AxiosRequestConfig } from "axios";
 import * as http from "https";
 import ffmpeg from "fluent-ffmpeg";
-import { TAudioFormat, TFormat } from "@/types/format";
+import { TAudioFormat, TFormat } from "../types/format";
 import { generateClientPlaybackNonce } from "@/helpers/utils";
-import { TPlayerResponse } from "@/types/player-response";
+import { TPlayerResponse } from "../types/player-response";
 
 export const fetchHtml = async (
     url: string,
@@ -18,8 +18,6 @@ export const fetchHtml = async (
 ) => {
     const response = await axios.get(url, options);
     console.log(`Fetching html page: ${url}`);
-    if (response.status !== 200)
-        throw new Error(`The server responded with code: ${response.status}`);
 
     return response.data;
 };
@@ -34,9 +32,6 @@ export const fetchtHTML5Player = async (htmlContent: string) => {
     console.info(`Fething player js: ${requestUrl}`);
 
     const response = await axios.get(requestUrl);
-
-    if (response.status !== 200)
-        throw new Error(`The server responded with code: ${response.status}`);
 
     return response.data;
 };
@@ -106,10 +101,17 @@ export const fetchAndroidJsonPlayer = async (
             data: JSON.stringify(payload),
         };
 
+        console.info(`Fetching android player: ${youtubeUrls.androidPlayer}`);
+
         const response = await axios<TPlayerResponse>(
             youtubeUrls.androidPlayer,
             config
         );
+
+        if (response.data.playabilityStatus.status !== "OK") {
+            console.info(`Failed fetch andorid player`);
+            return [];
+        }
 
         return response.data.streamingData.adaptiveFormats;
     } catch (e) {

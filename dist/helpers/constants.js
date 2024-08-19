@@ -6,9 +6,10 @@ exports.youtubeUrls = {
     base: "https://www.youtube.com",
     main: "https://www.youtube.com/watch?v=",
     mobile: "https://youtu.be/",
+    androidPlayer: "https://youtubei.googleapis.com/youtubei/v1/player",
 };
 exports.defautlOptions = {
-    format: "audio",
+    format: "all",
     checkWorkingLinks: true,
 };
 exports.ANDROID_CLIENT_VERSION = "19.30.36", exports.ANDROID_OS_VERSION = "14", exports.ANDROID_SDK_VERSION = "34";

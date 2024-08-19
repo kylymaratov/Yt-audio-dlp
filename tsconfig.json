@@ -5,9 +5,13 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "allowJs": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
     "skipLibCheck": true,
     "baseUrl": "src",
     "outDir": "dist",
+    "declaration": true,
     "paths": {
       "@/*": [
         "*"
@@ -15,9 +19,10 @@
     },
   },
   "include": [
-    "src",
+    "src"
   ],
   "exclude": [
+    "src/*.spec.ts",
     "node_modules",
     "dist"
   ]

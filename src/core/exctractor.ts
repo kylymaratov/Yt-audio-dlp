@@ -1,10 +1,10 @@
 import * as cheerio from "cheerio";
 import { streamingDataFormats } from "@/helpers/constants";
 import { HTML_PAGE_SCRIPT_REGEX } from "@/regexp/regexp";
-import { TFormat } from "@/types/format";
-import { TPlayerResponse } from "@/types/player-response";
-import { TSteamingDataFormat } from "@/types/streaming-data";
-import { TVideo } from "@/types/video-details";
+import { TFormat } from "../types/format";
+import { TPlayerResponse } from "../types/player-response";
+import { TSteamingDataFormat } from "../types/streaming-data";
+import { TVideo } from "../types/video-details";
 
 export const exctractVideoInfo = (htmlContent: string): TVideo => {
     const $ = cheerio.load(htmlContent);
@@ -18,6 +18,14 @@ export const exctractVideoInfo = (htmlContent: string): TVideo => {
             const match = scriptContent.match(HTML_PAGE_SCRIPT_REGEX);
             if (!match) return;
             playerResponse = JSON.parse(match[1]);
+            if (
+                !playerResponse ||
+                playerResponse?.playabilityStatus.status !== "OK"
+            ) {
+                throw new Error(
+                    `Failed to get HTML page reason: ${playerResponse?.playabilityStatus.status}`
+                );
+            }
         }
     });
 
@@ -35,13 +43,17 @@ const exctractFormats = (playerResponse: TPlayerResponse) => {
     const formats: TFormat[] = [];
     const streamingData = playerResponse.streamingData || {};
 
-    streamingDataFormats.forEach((dataType) => {
-        streamingData[dataType as TSteamingDataFormat].forEach((format) => {
-            if (!format) return;
+    try {
+        streamingDataFormats.forEach((dataType) => {
+            streamingData[dataType as TSteamingDataFormat].forEach((format) => {
+                if (!format) return;
 
-            formats.push(format);
+                formats.push(format);
+            });
         });
-    });
+    } catch {
+        return [];
+    }
 
     return formats;
 };

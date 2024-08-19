@@ -45,8 +45,6 @@ const utils_1 = require("@/helpers/utils");
 const fetchHtml = (url_1, ...args_1) => __awaiter(void 0, [url_1, ...args_1], void 0, function* (url, options = {}) {
     const response = yield axios_1.default.get(url, options);
     console.log(`Fetching html page: ${url}`);
-    if (response.status !== 200)
-        throw new Error(`The server responded with code: ${response.status}`);
     return response.data;
 });
 exports.fetchHtml = fetchHtml;
@@ -58,8 +56,6 @@ const fetchtHTML5Player = (htmlContent) => __awaiter(void 0, void 0, void 0, fun
     const requestUrl = constants_1.youtubeUrls.base + html5PlayerUrl;
     console.info(`Fething player js: ${requestUrl}`);
     const response = yield axios_1.default.get(requestUrl);
-    if (response.status !== 200)
-        throw new Error(`The server responded with code: ${response.status}`);
     return response.data;
 });
 exports.fetchtHTML5Player = fetchtHTML5Player;
@@ -117,7 +113,12 @@ const fetchAndroidJsonPlayer = (videoId) => __awaiter(void 0, void 0, void 0, fu
             },
             data: JSON.stringify(payload),
         };
-        const response = yield (0, axios_1.default)("https://youtubei.googleapis.com/youtubei/v1/player", config);
+        console.info(`Fetching android player: ${constants_1.youtubeUrls.androidPlayer}`);
+        const response = yield (0, axios_1.default)(constants_1.youtubeUrls.androidPlayer, config);
+        if (response.data.playabilityStatus.status !== "OK") {
+            console.info(`Failed fetch andorid player`);
+            return [];
+        }
         return response.data.streamingData.adaptiveFormats;
     }
     catch (e) {

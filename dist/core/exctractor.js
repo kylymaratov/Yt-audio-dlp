@@ -38,6 +38,10 @@ const exctractVideoInfo = (htmlContent) => {
             if (!match)
                 return;
             playerResponse = JSON.parse(match[1]);
+            if (!playerResponse ||
+                (playerResponse === null || playerResponse === void 0 ? void 0 : playerResponse.playabilityStatus.status) !== "OK") {
+                throw new Error(`Failed to get HTML page reason: ${playerResponse === null || playerResponse === void 0 ? void 0 : playerResponse.playabilityStatus.status}`);
+            }
         }
     });
     if (!playerResponse)
@@ -50,13 +54,18 @@ exports.exctractVideoInfo = exctractVideoInfo;
 const exctractFormats = (playerResponse) => {
     const formats = [];
     const streamingData = playerResponse.streamingData || {};
-    constants_1.streamingDataFormats.forEach((dataType) => {
-        streamingData[dataType].forEach((format) => {
-            if (!format)
-                return;
-            formats.push(format);
+    try {
+        constants_1.streamingDataFormats.forEach((dataType) => {
+            streamingData[dataType].forEach((format) => {
+                if (!format)
+                    return;
+                formats.push(format);
+            });
         });
-    });
+    }
+    catch (_a) {
+        return [];
+    }
     return formats;
 };
 const exctractExpireFromUrl = (url) => {

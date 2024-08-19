@@ -1,6 +1,6 @@
 import axios from "axios";
-import { TOptions } from "@/types/options";
-import { TVideo } from "@/types/video-details";
+import { TOptions } from "../types/options";
+import { TVideo } from "../types/video-details";
 
 export const validateByOptions = async (
     video: TVideo,
