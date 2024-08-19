@@ -23,6 +23,10 @@
         "lodash": "^4.17.21",
         "module-alias": "^2.2.3"
     },
+    "repository": {
+        "url": "https://github.com/kylymaratov/youtube-dlp.git",
+        "type": "github"
+    },
     "type": "module",
     "devDependencies": {
         "@rollup/plugin-alias": "^5.1.0",
