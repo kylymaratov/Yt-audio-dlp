@@ -7,12 +7,12 @@ import {
     fetchHtml,
 } from "@/core/downloader";
 import { exctractVideoInfo } from "@/core/exctractor";
-import { TVideo } from "@/types/video-details";
 import { extractFunctions, desipherDownloadURL } from "@/core/desipher";
-import { TOptions } from "@/types/options";
-import { validateByOptions } from "@/core/options";
+import { validateByOptions } from "./core/options";
 import ffmpeg from "fluent-ffmpeg";
-import { TAudioFormat } from "@/types/format";
+import { TOptions } from "./types/options";
+import { TVideo } from "./types/video-details";
+import { TAudioFormat } from "./types/format";
 
 class YoutubeDlp {
     async getVideoById(

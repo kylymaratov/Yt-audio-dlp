@@ -15,7 +15,7 @@ const check_regexp_1 = require("@/regexp/check-regexp");
 const downloader_1 = require("@/core/downloader");
 const exctractor_1 = require("@/core/exctractor");
 const desipher_1 = require("@/core/desipher");
-const options_1 = require("@/core/options");
+const options_1 = require("./core/options");
 class YoutubeDlp {
     getVideoById(id_1) {
         return __awaiter(this, arguments, void 0, function* (id, options = constants_1.defautlOptions) {
