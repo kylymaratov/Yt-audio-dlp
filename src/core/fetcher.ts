@@ -1,3 +1,9 @@
+import puppeteer from "puppeteer";
+import * as http from "https";
+import ffmpeg from "fluent-ffmpeg";
+import axios, { AxiosRequestConfig } from "axios";
+import { SocksProxyAgent } from "socks-proxy-agent";
+//
 import {
     ANDROID_CLIENT_VERSION,
     ANDROID_OS_VERSION,
@@ -5,18 +11,56 @@ import {
     youtubeUrls,
 } from "@/helpers/constants";
 import { HTML5_PLAYER_REGEX } from "@/regexp/regexp";
-import axios, { AxiosRequestConfig } from "axios";
-import * as http from "https";
-import ffmpeg from "fluent-ffmpeg";
-import { TAudioFormat, TFormat } from "../types/format";
+import { TAudioFormat, TFormat } from "@/types/format";
 import { generateClientPlaybackNonce } from "@/helpers/utils";
-import { TPlayerResponse } from "../types/player-response";
+import { TPlayerResponse } from "@/types/player-response";
+
+const socksAgent = new SocksProxyAgent("socks5://127.0.0.1:9050");
+
+export const fetchHtmlByPuppeteer = async (url: string) => {
+    const browser = await puppeteer.launch({
+        headless: false,
+        args: [
+            "--proxy-server=socks5://127.0.0.1:9050",
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-gpu",
+            "--disable-extensions",
+        ],
+    });
+
+    const page = await browser.newPage();
+    await page.setViewport({ width: 800, height: 600 });
+
+    await page.setRequestInterception(true);
+    page.on("request", (request) => {
+        if (["image", "stylesheet", "font"].includes(request.resourceType())) {
+            request.abort();
+        } else {
+            request.continue();
+        }
+    });
+
+    await page.goto(url, {
+        waitUntil: "load",
+    });
+
+    const html = await page.content();
+
+    await browser.close();
+
+    return html;
+};
 
 export const fetchHtml = async (
     url: string,
     options: AxiosRequestConfig = {}
 ) => {
-    const response = await axios.get(url, options);
+    const response = await axios.get(url, {
+        ...options,
+        httpAgent: socksAgent,
+        httpsAgent: socksAgent,
+    });
     console.log(`Fetching html page: ${url}`);
 
     return response.data;
@@ -105,7 +149,7 @@ export const fetchAndroidJsonPlayer = async (
 
         const response = await axios<TPlayerResponse>(
             youtubeUrls.androidPlayer,
-            config
+            { ...config, httpAgent: socksAgent, httpsAgent: socksAgent }
         );
 
         if (response.data.playabilityStatus.status !== "OK") {

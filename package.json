@@ -1,6 +1,6 @@
 {
     "name": "youtube-dlp",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "main": "dist/index.cjs",
     "module": "dist/index.mjs",
     "types": "dist/index.d.ts",
@@ -20,13 +20,14 @@
         "axios": "^1.7.4",
         "cheerio": "^1.0.0",
         "fluent-ffmpeg": "^2.1.3",
-        "module-alias": "^2.2.3"
+        "module-alias": "^2.2.3",
+        "puppeteer": "^23.1.0",
+        "socks-proxy-agent": "^8.0.4"
     },
     "repository": {
         "url": "https://github.com/kylymaratov/youtube-dlp.git",
         "type": "github"
     },
-    "type": "module",
     "devDependencies": {
         "@rollup/plugin-alias": "^5.1.0",
         "@rollup/plugin-commonjs": "^26.0.1",
@@ -39,10 +40,12 @@
         "@types/lodash": "^4.17.7",
         "@types/mocha": "^10.0.7",
         "@types/module-alias": "^2.0.4",
+        "@types/puppeteer": "^7.0.4",
         "chai": "^5.1.1",
         "mocha": "^10.7.3",
         "nodemon": "^3.1.4",
         "prettier": "^3.3.3",
-        "rollup": "^4.21.0"
+        "rollup": "^4.21.0",
+        "ts-node": "^10.9.2"
     }
 }

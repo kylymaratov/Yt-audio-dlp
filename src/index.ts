@@ -5,7 +5,8 @@ import {
     fetchAndroidJsonPlayer,
     fetchAudioStream,
     fetchHtml,
-} from "@/core/downloader";
+    fetchHtmlByPuppeteer,
+} from "@/core/fetcher";
 import { exctractVideoInfo } from "@/core/exctractor";
 import { extractFunctions, desipherDownloadURL } from "@/core/desipher";
 import { validateByOptions } from "./core/options";
@@ -118,3 +119,8 @@ class YoutubeDlp {
 }
 
 export default YoutubeDlp;
+
+new YoutubeDlp()
+    .getVideoById("dylyj3xObJo")
+    .then((res) => console.log(res))
+    .catch((err) => console.log(err));

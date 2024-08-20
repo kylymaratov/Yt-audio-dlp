@@ -1,8 +1,8 @@
 import vm from "vm";
 import querystring from "querystring";
-import { fetchtHTML5Player } from "./downloader";
-import { TFormat } from "../types/format";
-
+//
+import { fetchtHTML5Player } from "./fetcher";
+import { TFormat } from "@/types/format";
 import {
     DECIPHER_ARGUMENT,
     DECIPHER_FUNC_NAME,
