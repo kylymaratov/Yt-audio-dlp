@@ -5,6 +5,7 @@ import { TFormat } from "../types/format";
 import { TPlayerResponse } from "../types/player-response";
 import { TSteamingDataFormat } from "../types/streaming-data";
 import { TVideo } from "../types/video-details";
+import ErrorModule from "./error";
 
 export const exctractVideoInfo = (htmlContent: string): TVideo => {
     const $ = cheerio.load(htmlContent);
@@ -18,12 +19,18 @@ export const exctractVideoInfo = (htmlContent: string): TVideo => {
             const match = scriptContent.match(HTML_PAGE_SCRIPT_REGEX);
             if (!match) return;
             playerResponse = JSON.parse(match[1]);
-            if (
-                !playerResponse ||
-                playerResponse?.playabilityStatus.status !== "OK"
-            ) {
-                throw new Error(
-                    `Failed to get HTML page reason: ${playerResponse?.playabilityStatus.status}`
+
+            if (playerResponse?.playabilityStatus.status === "LOGIN_REQUIRED") {
+                throw new ErrorModule(
+                    "Failed while exctract andorid player",
+                    playerResponse.playabilityStatus.status
+                );
+            }
+            if (playerResponse?.playabilityStatus.status !== "OK") {
+                throw new ErrorModule(
+                    playerResponse?.playabilityStatus.reason ||
+                        "Error while exctract palyer response",
+                    playerResponse?.playabilityStatus.status
                 );
             }
         }

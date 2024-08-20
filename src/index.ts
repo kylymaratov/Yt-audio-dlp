@@ -1,30 +1,37 @@
 import "./path-register";
-import { defautlOptions, youtubeUrls } from "@/helpers/constants";
-import { checkVideoId } from "@/regexp/check-regexp";
 import {
-    fetchAndroidJsonPlayer,
-    fetchAudioStream,
-    fetchHtml,
-    fetchHtmlByPuppeteer,
-} from "@/core/fetcher";
+    ALLOWED_TRY_COUNT,
+    defautlOptions,
+    youtubeUrls,
+} from "@/helpers/constants";
+import { checkVideoId } from "@/regexp/check-regexp";
+import { fetchAndroidJsonPlayer, fetchHtml } from "@/core/fetcher";
 import { exctractVideoInfo } from "@/core/exctractor";
 import { extractFunctions, desipherDownloadURL } from "@/core/desipher";
 import { validateByOptions } from "./core/options";
-import ffmpeg from "fluent-ffmpeg";
 import { TOptions } from "./types/options";
 import { TVideo } from "./types/video-details";
-import { TAudioFormat } from "./types/format";
+import ErrorModule from "./core/error";
+import MyTor from "./core/tor";
 
 class YoutubeDlp {
     async getVideoById(
         id: string,
-        options: TOptions = defautlOptions
+        options: TOptions = defautlOptions,
+        try_count: number = 0
     ): Promise<TVideo> {
         try {
+            try_count++;
             if (!checkVideoId(id)) throw new Error("Invalid video id");
-            const htmlContent = await fetchHtml(youtubeUrls.main + id);
+            const htmlContent = await fetchHtml(
+                youtubeUrls.main + id,
+                options.torRequest
+            );
             const video = exctractVideoInfo(htmlContent);
-            const adaptiveFormats = await fetchAndroidJsonPlayer(id);
+            const adaptiveFormats = await fetchAndroidJsonPlayer(
+                id,
+                options.torRequest
+            );
             const scripts = await extractFunctions(htmlContent);
 
             video?.formats.map((format) =>
@@ -45,54 +52,29 @@ class YoutubeDlp {
 
             return await validateByOptions(video, options);
         } catch (e) {
-            throw e;
-        }
-    }
-
-    async getAudioStreamById(
-        id: string,
-        format: TAudioFormat = "mp3"
-    ): Promise<{ video: TVideo; stream: ffmpeg.FfmpegCommand }> {
-        try {
-            if (!checkVideoId(id)) throw new Error("Invalid video id");
-
-            const video = await this.getVideoById(id);
-
-            const stream = await fetchAudioStream(
-                video.formats[0].url || "",
-                format
-            );
-
-            return { video, stream };
-        } catch (e) {
-            throw e;
-        }
-    }
-
-    async getAudioStreamByHtml(
-        htmlContent: string,
-        format: TAudioFormat = "mp3"
-    ): Promise<{ video: TVideo; stream: ffmpeg.FfmpegCommand }> {
-        try {
-            const video = await this.getVideoByHtml(htmlContent);
-
-            const stream = await fetchAudioStream(video.formats[0].url, format);
-
-            return { video, stream };
-        } catch (e) {
+            if (
+                (e as ErrorModule).stack === "LOGIN_REQUIRED" &&
+                options.torRequest &&
+                try_count <= ALLOWED_TRY_COUNT
+            ) {
+                await new MyTor().newNym();
+                return this.getVideoById(id, options);
+            }
             throw e;
         }
     }
 
     async getVideoByHtml(
         htmlContent: string,
-        options: TOptions = defautlOptions
+        options: TOptions = defautlOptions,
+        try_count: number = 5
     ): Promise<TVideo> {
         try {
             const video = exctractVideoInfo(htmlContent);
             const scripts = await extractFunctions(htmlContent);
             const adaptiveFormats = await fetchAndroidJsonPlayer(
-                video.videoDetails.videoId
+                video.videoDetails.videoId,
+                options.torRequest
             );
 
             video.formats.map((format) => {
@@ -113,6 +95,14 @@ class YoutubeDlp {
 
             return await validateByOptions(video, options);
         } catch (e) {
+            if (
+                (e as ErrorModule).stack === "LOGIN_REQUIRED" &&
+                options.torRequest &&
+                try_count <= ALLOWED_TRY_COUNT
+            ) {
+                await new MyTor().newNym();
+                return this.getVideoById(htmlContent, options);
+            }
             throw e;
         }
     }
@@ -121,6 +111,6 @@ class YoutubeDlp {
 export default YoutubeDlp;
 
 new YoutubeDlp()
-    .getVideoById("dylyj3xObJo")
+    .getVideoById("dylyj3xObJo", { format: "audio", torRequest: true })
     .then((res) => console.log(res))
     .catch((err) => console.log(err));
