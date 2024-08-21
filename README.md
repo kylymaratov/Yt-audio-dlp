@@ -1,4 +1,4 @@
-# Youtube-dlp
+# Youtube-dlp 📹
 
 This is a library for web scraping YouTube. With this library you can get direct links to download video audio from YouTube
 
