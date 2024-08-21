@@ -14,9 +14,7 @@ import YoutubeDlp from "youtube-dlp";
 /* Youtube-dl input options */
 const youtubeDlOptions = {
     checkWorkingLinks: true,
-    cookies: "",
-    format: "all",
-    userAgent: "",
+    format: "all" /* audio, video, all */,
     torRequest: false
 }
 
