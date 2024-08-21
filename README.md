@@ -28,3 +28,46 @@ youtubeDlp.getVideoById("lJIQrI15_c8")
 ```
 
 To prevent YouTube from blocking you for frequent requests, it is recommended to enable TorRequest to make requests via the Tor network.
+
+## Lib result
+
+```
+{
+    video: {
+        videoDetails: {
+              videoId: string;
+              title: string;
+              lengthSeconds: string;
+              keywords: string[];
+              channelId: string;
+              isOwnerViewing: boolean;
+              shortDescription: string;
+              isCrawlable: boolean;
+              thumbnail: { thumbnails: {
+                        url: string;
+                        width: number;
+                        height: number;
+                }};
+              allowRatings: boolean;
+              viewCount: string;
+              author: string;
+              isPrivate: boolean;
+              isUnpluggedCorpus: boolean;
+              isLiveContent: boolean;
+        };
+        formats: /* Video formats */;
+        adaptiveFormats: /* Video formats */;
+    };
+    responseOptions: {
+    web: {
+        userAgent: string;
+        cookies: string;
+    };
+    android: {
+        userAgent: string;
+        cookies: string;
+    };
+    }
+}
+
+```
