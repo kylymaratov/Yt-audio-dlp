@@ -53,7 +53,16 @@ class YoutubeDlp {
                 )
             );
 
-            const validatedVideo = await validateByOptions(video, this.options);
+            const params = {
+                userAgent: webData.userAgent,
+                cookies: webData.cookies,
+            };
+
+            const validatedVideo = await validateByOptions(
+                video,
+                this.options,
+                params
+            );
 
             return {
                 video: validatedVideo,
@@ -109,7 +118,16 @@ class YoutubeDlp {
                 )
             );
 
-            const validatedVideo = validateByOptions(video, this.options);
+            const params = {
+                userAgent: androidData.userAgent,
+                cookies: androidData.cookies,
+            };
+
+            const validatedVideo = validateByOptions(
+                video,
+                this.options,
+                params
+            );
 
             return validatedVideo;
         } catch (e) {

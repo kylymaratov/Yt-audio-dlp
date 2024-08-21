@@ -5,7 +5,8 @@ import { TVideo } from "@/types/video-details";
 
 export const validateByOptions = async (
     video: TVideo,
-    opt: TOptions
+    opt: TOptions,
+    params: { userAgent: string; cookies: string }
 ): Promise<TVideo> => {
     if (opt.format === "audio") {
         video.adaptiveFormats = video?.adaptiveFormats.filter((f) =>
@@ -24,7 +25,13 @@ export const validateByOptions = async (
         for (let f of video.adaptiveFormats) {
             try {
                 if (!f.url) continue;
-                await axios.head(f.url, { timeout: 5000 });
+                await axios.head(f.url, {
+                    timeout: 5000,
+                    headers: {
+                        "User-Agent": params.userAgent,
+                        Cookies: params.cookies,
+                    },
+                });
                 work_formats.push(f);
             } catch (e) {
                 continue;
