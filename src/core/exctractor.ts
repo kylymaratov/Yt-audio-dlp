@@ -38,7 +38,10 @@ export const exctractVideoInfo = (htmlContent: string): TVideo => {
         }
     });
     if (!playerResponse)
-        throw new Error("Incorrect HTML, video information not found");
+        throw new ErrorModule(
+            "Incorrect HTML, video information not found",
+            "INCORRECT_HTML"
+        );
 
     const formats = exctractFormats(playerResponse) || [];
 

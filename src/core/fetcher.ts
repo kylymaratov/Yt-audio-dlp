@@ -37,12 +37,12 @@ export const fetchHtml = async (
         httpAgent: options.torRequest ? socksAgent : null,
         httpsAgent: options.torRequest ? socksAgent : null,
         headers: {
-            "User-Agent": options.userAgent || userAgent,
+            "User-Agent": userAgent,
         },
     });
     return {
         htmlContent: response.data,
-        userAgent: options.userAgent || userAgent,
+        userAgent: userAgent,
         cookies: response.headers["set-cookie"]?.toString() || "",
     };
 };
@@ -54,7 +54,7 @@ export const fetchtHTML5Player = async (htmlContent: string) => {
         : "";
     const requestUrl = youtubeUrls.base + html5PlayerUrl;
 
-    console.info(`Fething player js: ${requestUrl}`);
+    console.info(`Fetching player js: ${requestUrl}`);
 
     const response = await axios.get(requestUrl);
 
@@ -105,7 +105,6 @@ export const fetchAndroidJsonPlayer = async (
                 "Content-Type": "application/json",
                 "User-Agent": userAgent,
                 "X-Goog-Api-Format-Version": "2",
-                Cookie: options.cookies,
             },
             data: JSON.stringify(payload),
         };
