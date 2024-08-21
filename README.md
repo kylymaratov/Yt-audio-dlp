@@ -29,7 +29,7 @@ youtubeDlp.getVideoById("lJIQrI15_c8")
 
 To prevent YouTube from blocking you for frequent requests, it is recommended to enable TorRequest to make requests via the Tor network.
 
-## Lib result
+## Result
 
 ```
 {
