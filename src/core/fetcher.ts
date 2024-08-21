@@ -1,5 +1,3 @@
-import * as http from "https";
-import ffmpeg from "fluent-ffmpeg";
 import axios, { AxiosRequestConfig } from "axios";
 import { SocksProxyAgent } from "socks-proxy-agent";
 //
@@ -10,28 +8,43 @@ import {
     youtubeUrls,
 } from "@/helpers/constants";
 import { HTML5_PLAYER_REGEX } from "@/regexp/regexp";
-import { TAudioFormat, TFormat } from "@/types/format";
+import { TFormat } from "@/types/format";
 import { generateClientPlaybackNonce } from "@/helpers/utils";
 import { TPlayerResponse } from "@/types/player-response";
+import { TOptions } from "@/types/options";
 import ErrorModule from "./error";
+import {
+    getRandomUserAgent,
+    getRandomYouTubeUserAgent,
+} from "@/helpers/user-agent";
 
 const socksAgent = new SocksProxyAgent("socks5://127.0.0.1:9050");
 
-export const fetchHtml = async (url: string, torRequest?: boolean) => {
+export const fetchHtml = async (
+    url: string,
+    options: TOptions
+): Promise<{ htmlContent: any; userAgent: string; cookies: string }> => {
     console.info(`Fetching html page: ${url}`);
 
-    if (torRequest) {
+    if (options.torRequest) {
         console.log(
             `Tor proxy ${socksAgent.proxy.host}:${socksAgent.proxy.port}`
         );
     }
+    const userAgent = getRandomUserAgent();
 
     const response = await axios.get(url, {
-        httpAgent: torRequest ? socksAgent : null,
-        httpsAgent: torRequest ? socksAgent : null,
+        httpAgent: options.torRequest ? socksAgent : null,
+        httpsAgent: options.torRequest ? socksAgent : null,
+        headers: {
+            "User-Agent": options.userAgent || userAgent,
+        },
     });
-
-    return response.data;
+    return {
+        htmlContent: response.data,
+        userAgent: options.userAgent || userAgent,
+        cookies: response.headers["set-cookie"]?.toString() || "",
+    };
 };
 
 export const fetchtHTML5Player = async (htmlContent: string) => {
@@ -48,33 +61,17 @@ export const fetchtHTML5Player = async (htmlContent: string) => {
     return response.data;
 };
 
-export const fetchAudioStream = (
-    url: string,
-    format: TAudioFormat
-): Promise<ffmpeg.FfmpegCommand> => {
-    return new Promise((res, rej) => {
-        http.get(url, (response) => {
-            const stream = ffmpeg()
-                .input(response)
-                .noVideo()
-                .audioCodec(format === "mp3" ? "libmp3lame" : "libopus")
-                .format(format);
-
-            response.on("error", (err) => {
-                rej(err);
-            });
-            stream.on("error", (err) => rej(err));
-
-            res(stream);
-        });
-    });
-};
-
 export const fetchAndroidJsonPlayer = async (
     videoId: string,
-    torRequest?: boolean
-): Promise<TFormat[]> => {
+    options: TOptions
+): Promise<{
+    androidFormats: TFormat[];
+    userAgent: string;
+    cookies: string;
+}> => {
     try {
+        const { userAgent } = getRandomYouTubeUserAgent();
+
         const payload = {
             videoId,
             cpn: generateClientPlaybackNonce(16),
@@ -106,17 +103,16 @@ export const fetchAndroidJsonPlayer = async (
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "User-Agent": `com.google.android.youtube/${
-                    ANDROID_CLIENT_VERSION
-                } (Linux; U; Android ${ANDROID_OS_VERSION}; en_US) gzip`,
+                "User-Agent": userAgent,
                 "X-Goog-Api-Format-Version": "2",
+                Cookie: options.cookies,
             },
             data: JSON.stringify(payload),
         };
 
         console.info(`Fetching android player: ${youtubeUrls.androidPlayer}`);
 
-        if (torRequest) {
+        if (options.torRequest) {
             console.log(
                 `Tor proxy ${socksAgent.proxy.host}:${socksAgent.proxy.port}`
             );
@@ -125,8 +121,8 @@ export const fetchAndroidJsonPlayer = async (
             youtubeUrls.androidPlayer,
             {
                 ...config,
-                httpAgent: torRequest ? socksAgent : null,
-                httpsAgent: torRequest ? socksAgent : null,
+                httpAgent: options.torRequest ? socksAgent : null,
+                httpsAgent: options.torRequest ? socksAgent : null,
             }
         );
 
@@ -139,11 +135,19 @@ export const fetchAndroidJsonPlayer = async (
 
         if (response.data.playabilityStatus.status !== "OK") {
             console.info(`Failed fetch andorid player`);
-            return [];
+            throw new ErrorModule("Failed fetch andorid player");
         }
 
-        return response.data.streamingData.adaptiveFormats;
+        return {
+            androidFormats: response.data.streamingData.adaptiveFormats,
+            userAgent,
+            cookies: response.headers["set-cookie"]?.toString() || "",
+        };
     } catch (e) {
-        return [];
+        return {
+            androidFormats: [],
+            userAgent: "",
+            cookies: "",
+        };
     }
 };

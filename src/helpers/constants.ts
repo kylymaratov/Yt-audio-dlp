@@ -11,7 +11,7 @@ export const youtubeUrls = {
 
 export const defautlOptions: TOptions = {
     format: "all",
-    checkWorkingLinks: true,
+    checkWorkingLinks: false,
     torRequest: false,
 };
 
@@ -19,4 +19,4 @@ export const ANDROID_CLIENT_VERSION = "19.30.36",
     ANDROID_OS_VERSION = "14",
     ANDROID_SDK_VERSION = "34";
 
-export const ALLOWED_TRY_COUNT = 2;
+export const ALLOWED_TRY_COUNT = 3;

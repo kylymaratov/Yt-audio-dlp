@@ -19,6 +19,7 @@ class MyTor extends TorControl {
             return;
         } catch (err) {
             console.error("Error:", err);
+            throw err;
         }
     }
 }

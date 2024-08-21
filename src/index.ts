@@ -9,7 +9,7 @@ import { fetchAndroidJsonPlayer, fetchHtml } from "@/core/fetcher";
 import { exctractVideoInfo } from "@/core/exctractor";
 import { extractFunctions, desipherDownloadURL } from "@/core/desipher";
 import { validateByOptions } from "./core/options";
-import { TOptions } from "./types/options";
+import { TOptions, TResponseOptions } from "./types/options";
 import { TVideo } from "./types/video-details";
 import ErrorModule from "./core/error";
 import MyTor from "./core/tor";
@@ -19,20 +19,17 @@ class YoutubeDlp {
         id: string,
         options: TOptions = defautlOptions,
         try_count: number = 0
-    ): Promise<TVideo> {
+    ): Promise<{ video: TVideo; responseOptions: TResponseOptions }> {
         try {
             try_count++;
             if (!checkVideoId(id)) throw new Error("Invalid video id");
-            const htmlContent = await fetchHtml(
-                youtubeUrls.main + id,
-                options.torRequest
-            );
-            const video = exctractVideoInfo(htmlContent);
-            const adaptiveFormats = await fetchAndroidJsonPlayer(
-                id,
-                options.torRequest
-            );
-            const scripts = await extractFunctions(htmlContent);
+            const webData = await fetchHtml(youtubeUrls.main + id, options);
+            const video = exctractVideoInfo(webData.htmlContent);
+            options.cookies = options.cookies
+                ? options.cookies
+                : webData.cookies;
+            const androidData = await fetchAndroidJsonPlayer(id, options);
+            const scripts = await extractFunctions(webData.htmlContent);
 
             video?.formats.map((format) =>
                 desipherDownloadURL(
@@ -42,7 +39,7 @@ class YoutubeDlp {
                 )
             );
 
-            video.adaptiveFormats = adaptiveFormats.map((format) =>
+            video.adaptiveFormats = androidData.androidFormats.map((format) =>
                 desipherDownloadURL(
                     format,
                     scripts.decipher,
@@ -50,7 +47,21 @@ class YoutubeDlp {
                 )
             );
 
-            return await validateByOptions(video, options);
+            const validatedVideo = await validateByOptions(video, options);
+
+            return {
+                video: validatedVideo,
+                responseOptions: {
+                    web: {
+                        userAgent: webData.userAgent,
+                        cookies: webData.cookies,
+                    },
+                    android: {
+                        userAgent: androidData.userAgent,
+                        cookies: androidData.cookies,
+                    },
+                },
+            };
         } catch (e) {
             if (
                 (e as ErrorModule).stack === "LOGIN_REQUIRED" &&
@@ -72,9 +83,9 @@ class YoutubeDlp {
         try {
             const video = exctractVideoInfo(htmlContent);
             const scripts = await extractFunctions(htmlContent);
-            const adaptiveFormats = await fetchAndroidJsonPlayer(
+            const androidData = await fetchAndroidJsonPlayer(
                 video.videoDetails.videoId,
-                options.torRequest
+                options
             );
 
             video.formats.map((format) => {
@@ -85,7 +96,7 @@ class YoutubeDlp {
                 );
             });
 
-            video.adaptiveFormats = adaptiveFormats.map((format) =>
+            video.adaptiveFormats = androidData.androidFormats.map((format) =>
                 desipherDownloadURL(
                     format,
                     scripts.decipher,
@@ -93,7 +104,9 @@ class YoutubeDlp {
                 )
             );
 
-            return await validateByOptions(video, options);
+            const validatedVideo = validateByOptions(video, options);
+
+            return validatedVideo;
         } catch (e) {
             if (
                 (e as ErrorModule).stack === "LOGIN_REQUIRED" &&
@@ -101,16 +114,22 @@ class YoutubeDlp {
                 try_count <= ALLOWED_TRY_COUNT
             ) {
                 await new MyTor().newNym();
-                return this.getVideoById(htmlContent, options);
+                return this.getVideoByHtml(htmlContent, options);
             }
             throw e;
         }
+    }
+
+    async newTorNym() {
+        return await new MyTor().newNym();
     }
 }
 
 export default YoutubeDlp;
 
 new YoutubeDlp()
-    .getVideoById("dylyj3xObJo", { format: "audio", torRequest: true })
-    .then((res) => console.log(res))
-    .catch((err) => console.log(err));
+    .getVideoById("IhDk7W7Sj40", {
+        format: "all",
+        torRequest: false,
+    })
+    .then((res) => console.log(res.video));
