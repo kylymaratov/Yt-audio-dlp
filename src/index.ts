@@ -126,10 +126,3 @@ class YoutubeDlp {
 }
 
 export default YoutubeDlp;
-
-new YoutubeDlp()
-    .getVideoById("IhDk7W7Sj40", {
-        format: "all",
-        torRequest: false,
-    })
-    .then((res) => console.log(res.video));

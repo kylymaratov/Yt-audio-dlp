@@ -23,10 +23,10 @@
     },
   },
   "include": [
-    "src"
+    "src",
   ],
   "exclude": [
-    "src/*.spec.ts",
+    "src/tests/*.test.ts",
     "node_modules",
     "dist"
   ]

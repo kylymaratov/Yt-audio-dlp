@@ -17,7 +17,9 @@ export const exctractVideoInfo = (htmlContent: string): TVideo => {
         const scriptContent = $(scriptTag).html();
         if (scriptContent) {
             const match = scriptContent.match(HTML_PAGE_SCRIPT_REGEX);
+
             if (!match) return;
+
             playerResponse = JSON.parse(match[1]);
 
             if (playerResponse?.playabilityStatus.status === "LOGIN_REQUIRED") {
@@ -35,7 +37,6 @@ export const exctractVideoInfo = (htmlContent: string): TVideo => {
             }
         }
     });
-
     if (!playerResponse)
         throw new Error("Incorrect HTML, video information not found");
 
