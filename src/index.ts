@@ -15,20 +15,26 @@ import ErrorModule from "./core/error";
 import MyTor from "./core/tor";
 
 class YoutubeDlp {
+    private options: TOptions;
+
+    constructor(options?: TOptions) {
+        this.options = options || defautlOptions;
+    }
+
     async getVideoById(
         id: string,
-        options: TOptions = defautlOptions,
         try_count: number = 0
     ): Promise<{ video: TVideo; responseOptions: TResponseOptions }> {
         try {
             try_count++;
             if (!checkVideoId(id)) throw new Error("Invalid video id");
-            const webData = await fetchHtml(youtubeUrls.main + id, options);
+            const webData = await fetchHtml(
+                youtubeUrls.main + id,
+                this.options
+            );
             const video = exctractVideoInfo(webData.htmlContent);
-            options.cookies = options.cookies
-                ? options.cookies
-                : webData.cookies;
-            const androidData = await fetchAndroidJsonPlayer(id, options);
+
+            const androidData = await fetchAndroidJsonPlayer(id, this.options);
             const scripts = await extractFunctions(webData.htmlContent);
 
             video?.formats.map((format) =>
@@ -47,7 +53,7 @@ class YoutubeDlp {
                 )
             );
 
-            const validatedVideo = await validateByOptions(video, options);
+            const validatedVideo = await validateByOptions(video, this.options);
 
             return {
                 video: validatedVideo,
@@ -65,11 +71,11 @@ class YoutubeDlp {
         } catch (e) {
             if (
                 (e as ErrorModule).stack === "LOGIN_REQUIRED" &&
-                options.torRequest &&
+                this.options.torRequest &&
                 try_count <= ALLOWED_TRY_COUNT
             ) {
                 await new MyTor().newNym();
-                return this.getVideoById(id, options);
+                return this.getVideoById(id);
             }
             throw e;
         }
@@ -77,7 +83,6 @@ class YoutubeDlp {
 
     async getVideoByHtml(
         htmlContent: string,
-        options: TOptions = defautlOptions,
         try_count: number = 5
     ): Promise<TVideo> {
         try {
@@ -85,7 +90,7 @@ class YoutubeDlp {
             const scripts = await extractFunctions(htmlContent);
             const androidData = await fetchAndroidJsonPlayer(
                 video.videoDetails.videoId,
-                options
+                this.options
             );
 
             video.formats.map((format) => {
@@ -104,17 +109,17 @@ class YoutubeDlp {
                 )
             );
 
-            const validatedVideo = validateByOptions(video, options);
+            const validatedVideo = validateByOptions(video, this.options);
 
             return validatedVideo;
         } catch (e) {
             if (
                 (e as ErrorModule).stack === "LOGIN_REQUIRED" &&
-                options.torRequest &&
+                this.options.torRequest &&
                 try_count <= ALLOWED_TRY_COUNT
             ) {
                 await new MyTor().newNym();
-                return this.getVideoByHtml(htmlContent, options);
+                return this.getVideoByHtml(htmlContent);
             }
             throw e;
         }
