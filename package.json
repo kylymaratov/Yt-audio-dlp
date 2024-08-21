@@ -22,7 +22,8 @@
         "cheerio": "^1.0.0",
         "module-alias": "^2.2.3",
         "socks-proxy-agent": "^8.0.4",
-        "tor-control": "^0.0.3"
+        "tor-control": "^0.0.3",
+        "youtube-dlp": "^1.0.3"
     },
     "repository": {
         "url": "https://github.com/kylymaratov/youtube-dlp.git",
