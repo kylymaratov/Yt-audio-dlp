@@ -6,7 +6,6 @@ describe("YoutubeDlp", () => {
         const youtubeDlp = new YoutubeDlp();
 
         const res = await youtubeDlp.getVideoById("mpHvHGMZ0jc");
-
         expect(res.video.videoDetails.videoId).toEqual("mpHvHGMZ0jc");
     });
 
@@ -16,7 +15,6 @@ describe("YoutubeDlp", () => {
             "https://www.youtube.com/watch?v=oArXPR63Xc8"
         );
         const res = await youtubeDlp.getVideoByHtml(response.data);
-
         expect(res.videoDetails.videoId).toEqual("oArXPR63Xc8");
     });
 });
