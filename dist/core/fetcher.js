@@ -33,12 +33,12 @@ const fetchHtml = (url, options) => __awaiter(void 0, void 0, void 0, function* 
         httpAgent: options.torRequest ? socksAgent : null,
         httpsAgent: options.torRequest ? socksAgent : null,
         headers: {
-            "User-Agent": options.userAgent || userAgent,
+            "User-Agent": userAgent,
         },
     });
     return {
         htmlContent: response.data,
-        userAgent: options.userAgent || userAgent,
+        userAgent: userAgent,
         cookies: ((_a = response.headers["set-cookie"]) === null || _a === void 0 ? void 0 : _a.toString()) || "",
     };
 });
@@ -49,7 +49,7 @@ const fetchtHTML5Player = (htmlContent) => __awaiter(void 0, void 0, void 0, fun
         ? html5PlayerRes[1] || html5PlayerRes[2]
         : "";
     const requestUrl = constants_1.youtubeUrls.base + html5PlayerUrl;
-    console.info(`Fething player js: ${requestUrl}`);
+    console.info(`Fetching player js: ${requestUrl}`);
     const response = yield axios_1.default.get(requestUrl);
     return response.data;
 });
@@ -90,7 +90,6 @@ const fetchAndroidJsonPlayer = (videoId, options) => __awaiter(void 0, void 0, v
                 "Content-Type": "application/json",
                 "User-Agent": userAgent,
                 "X-Goog-Api-Format-Version": "2",
-                Cookie: options.cookies,
             },
             data: JSON.stringify(payload),
         };

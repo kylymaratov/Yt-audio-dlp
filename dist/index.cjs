@@ -25548,12 +25548,12 @@ const fetchHtml = (url, options) => __awaiter$4(void 0, void 0, void 0, function
         httpAgent: options.torRequest ? socksAgent : null,
         httpsAgent: options.torRequest ? socksAgent : null,
         headers: {
-            "User-Agent": options.userAgent || userAgent,
+            "User-Agent": userAgent,
         },
     });
     return {
         htmlContent: response.data,
-        userAgent: options.userAgent || userAgent,
+        userAgent: userAgent,
         cookies: ((_a = response.headers["set-cookie"]) === null || _a === void 0 ? void 0 : _a.toString()) || "",
     };
 });
@@ -25564,7 +25564,7 @@ const fetchtHTML5Player = (htmlContent) => __awaiter$4(void 0, void 0, void 0, f
         ? html5PlayerRes[1] || html5PlayerRes[2]
         : "";
     const requestUrl = constants_1$2.youtubeUrls.base + html5PlayerUrl;
-    console.info(`Fething player js: ${requestUrl}`);
+    console.info(`Fetching player js: ${requestUrl}`);
     const response = yield axios_1$1.default.get(requestUrl);
     return response.data;
 });
@@ -25605,7 +25605,6 @@ const fetchAndroidJsonPlayer = (videoId, options) => __awaiter$4(void 0, void 0,
                 "Content-Type": "application/json",
                 "User-Agent": userAgent,
                 "X-Goog-Api-Format-Version": "2",
-                Cookie: options.cookies,
             },
             data: JSON.stringify(payload),
         };
@@ -83584,7 +83583,7 @@ const exctractVideoInfo = (htmlContent) => {
         }
     });
     if (!playerResponse)
-        throw new Error("Incorrect HTML, video information not found");
+        throw new error_1.default("Incorrect HTML, video information not found", "INCORRECT_HTML");
     const formats = exctractFormats(playerResponse) || [];
     const videoDetails = playerResponse.videoDetails;
     return { videoDetails, formats, adaptiveFormats: [] };
@@ -84186,22 +84185,22 @@ const desipher_1 = desipher;
 const options_1 = options;
 const tor_1 = __importDefault(tor);
 class YoutubeDlp {
+    constructor(options) {
+        this.options = options || constants_1.defautlOptions;
+    }
     getVideoById(id_1) {
-        return __awaiter(this, arguments, void 0, function* (id, options = constants_1.defautlOptions, try_count = 0) {
+        return __awaiter(this, arguments, void 0, function* (id, try_count = 0) {
             try {
                 try_count++;
                 if (!(0, check_regexp_1.checkVideoId)(id))
                     throw new Error("Invalid video id");
-                const webData = yield (0, fetcher_1.fetchHtml)(constants_1.youtubeUrls.main + id, options);
+                const webData = yield (0, fetcher_1.fetchHtml)(constants_1.youtubeUrls.main + id, this.options);
                 const video = (0, exctractor_1.exctractVideoInfo)(webData.htmlContent);
-                options.cookies = options.cookies
-                    ? options.cookies
-                    : webData.cookies;
-                const androidData = yield (0, fetcher_1.fetchAndroidJsonPlayer)(id, options);
+                const androidData = yield (0, fetcher_1.fetchAndroidJsonPlayer)(id, this.options);
                 const scripts = yield (0, desipher_1.extractFunctions)(webData.htmlContent);
                 video === null || video === void 0 ? void 0 : video.formats.map((format) => (0, desipher_1.desipherDownloadURL)(format, scripts.decipher, scripts.nTransform));
                 video.adaptiveFormats = androidData.androidFormats.map((format) => (0, desipher_1.desipherDownloadURL)(format, scripts.decipher, scripts.nTransform));
-                const validatedVideo = yield (0, options_1.validateByOptions)(video, options);
+                const validatedVideo = yield (0, options_1.validateByOptions)(video, this.options);
                 return {
                     video: validatedVideo,
                     responseOptions: {
@@ -84218,34 +84217,34 @@ class YoutubeDlp {
             }
             catch (e) {
                 if (e.stack === "LOGIN_REQUIRED" &&
-                    options.torRequest &&
+                    this.options.torRequest &&
                     try_count <= constants_1.ALLOWED_TRY_COUNT) {
                     yield new tor_1.default().newNym();
-                    return this.getVideoById(id, options);
+                    return this.getVideoById(id);
                 }
                 throw e;
             }
         });
     }
     getVideoByHtml(htmlContent_1) {
-        return __awaiter(this, arguments, void 0, function* (htmlContent, options = constants_1.defautlOptions, try_count = 5) {
+        return __awaiter(this, arguments, void 0, function* (htmlContent, try_count = 5) {
             try {
                 const video = (0, exctractor_1.exctractVideoInfo)(htmlContent);
                 const scripts = yield (0, desipher_1.extractFunctions)(htmlContent);
-                const androidData = yield (0, fetcher_1.fetchAndroidJsonPlayer)(video.videoDetails.videoId, options);
+                const androidData = yield (0, fetcher_1.fetchAndroidJsonPlayer)(video.videoDetails.videoId, this.options);
                 video.formats.map((format) => {
                     return (0, desipher_1.desipherDownloadURL)(format, scripts.decipher, scripts.nTransform);
                 });
                 video.adaptiveFormats = androidData.androidFormats.map((format) => (0, desipher_1.desipherDownloadURL)(format, scripts.decipher, scripts.nTransform));
-                const validatedVideo = (0, options_1.validateByOptions)(video, options);
+                const validatedVideo = (0, options_1.validateByOptions)(video, this.options);
                 return validatedVideo;
             }
             catch (e) {
                 if (e.stack === "LOGIN_REQUIRED" &&
-                    options.torRequest &&
+                    this.options.torRequest &&
                     try_count <= constants_1.ALLOWED_TRY_COUNT) {
                     yield new tor_1.default().newNym();
-                    return this.getVideoByHtml(htmlContent, options);
+                    return this.getVideoByHtml(htmlContent);
                 }
                 throw e;
             }

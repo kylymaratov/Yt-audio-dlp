@@ -22,7 +22,6 @@ export interface TVideoDetails {
     isPrivate: boolean;
     isUnpluggedCorpus: boolean;
     isLiveContent: boolean;
-    urlsExpire?: number;
 }
 export interface TVideo {
     videoDetails: TVideoDetails;

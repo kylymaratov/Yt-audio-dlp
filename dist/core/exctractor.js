@@ -52,7 +52,7 @@ const exctractVideoInfo = (htmlContent) => {
         }
     });
     if (!playerResponse)
-        throw new Error("Incorrect HTML, video information not found");
+        throw new error_1.default("Incorrect HTML, video information not found", "INCORRECT_HTML");
     const formats = exctractFormats(playerResponse) || [];
     const videoDetails = playerResponse.videoDetails;
     return { videoDetails, formats, adaptiveFormats: [] };
