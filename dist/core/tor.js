@@ -14,17 +14,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const tor_control_1 = __importDefault(require("tor-control"));
 class MyTor extends tor_control_1.default {
-    constructor(host, port, password) {
+    constructor(torOptions) {
         super({
-            host: host || "127.0.0.1",
-            port: port || 9050,
-            password: password || "",
+            host: (torOptions === null || torOptions === void 0 ? void 0 : torOptions.host) || "127.0.0.1",
+            port: (torOptions === null || torOptions === void 0 ? void 0 : torOptions.port) || 9050,
+            password: (torOptions === null || torOptions === void 0 ? void 0 : torOptions.password) || "",
         });
     }
     newNym() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                yield this.authenticate();
                 yield this.signal("NEWNYM");
                 console.info("Tor nodes have been changed.");
                 return;

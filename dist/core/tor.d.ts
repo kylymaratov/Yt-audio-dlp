@@ -1,6 +1,7 @@
+import { TTorOptions } from "@/types/options";
 import TorControl from "tor-control";
 declare class MyTor extends TorControl {
-    constructor(host?: string, port?: number, password?: string);
+    constructor(torOptions?: TTorOptions);
     newNym(): Promise<void>;
 }
 export default MyTor;

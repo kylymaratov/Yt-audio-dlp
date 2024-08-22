@@ -25424,7 +25424,7 @@ class ErrorModule extends Error {
         this.message = message;
         this.name = ErrorModule.name;
         this.stack = reason;
-        console.error(`Throw error: ${name}, message: ${message}, reason: ${reason}`);
+        console.error(`Throw error: ${this.name}, message: ${this.message}, reason: ${reason}`);
         Error.captureStackTrace(this, ErrorModule);
     }
 }
@@ -25532,7 +25532,7 @@ const socks_proxy_agent_1 = dist$1;
 const constants_1$2 = constants$a;
 const regexp_1$2 = regexp;
 const utils_1 = utils$3;
-const error_1$1 = __importDefault$b(error);
+const error_1$2 = __importDefault$b(error);
 const user_agent_1 = userAgent;
 const socksAgent = new socks_proxy_agent_1.SocksProxyAgent("socks5://127.0.0.1:9050");
 const fetchHtml = (url, options) => __awaiter$4(void 0, void 0, void 0, function* () {
@@ -25612,11 +25612,11 @@ const fetchAndroidJsonPlayer = (videoId, options) => __awaiter$4(void 0, void 0,
         }
         const response = yield (0, axios_1$1.default)(constants_1$2.youtubeUrls.androidPlayer, Object.assign(Object.assign({}, config), { httpAgent: options.torRequest ? socksAgent : null, httpsAgent: options.torRequest ? socksAgent : null }));
         if (response.data.playabilityStatus.status === "LOGIN_REQUIRED") {
-            throw new error_1$1.default("Failed while exctract andorid player", response.data.playabilityStatus.status);
+            throw new error_1$2.default("Failed while exctract andorid player", response.data.playabilityStatus.status);
         }
         if (response.data.playabilityStatus.status !== "OK") {
             console.info(`Failed fetch andorid player`);
-            throw new error_1$1.default("Failed fetch andorid player");
+            throw new error_1$2.default("Failed fetch andorid player");
         }
         return {
             androidFormats: response.data.streamingData.adaptiveFormats,
@@ -83559,7 +83559,7 @@ exctractor.exctractExpireFromUrl = exctractor.exctractVideoInfo = void 0;
 const cheerio = __importStar(commonjs$1);
 const constants_1$1 = constants$a;
 const regexp_1$1 = regexp;
-const error_1 = __importDefault$4(error);
+const error_1$1 = __importDefault$4(error);
 const exctractVideoInfo = (htmlContent) => {
     const $ = cheerio.load(htmlContent);
     const scriptTags = $("script");
@@ -83572,16 +83572,16 @@ const exctractVideoInfo = (htmlContent) => {
                 return;
             playerResponse = JSON.parse(match[1]);
             if ((playerResponse === null || playerResponse === void 0 ? void 0 : playerResponse.playabilityStatus.status) === "LOGIN_REQUIRED") {
-                throw new error_1.default("Failed while exctract andorid player", playerResponse.playabilityStatus.status);
+                throw new error_1$1.default("Failed while exctract andorid player", playerResponse.playabilityStatus.status);
             }
             if ((playerResponse === null || playerResponse === void 0 ? void 0 : playerResponse.playabilityStatus.status) !== "OK") {
-                throw new error_1.default((playerResponse === null || playerResponse === void 0 ? void 0 : playerResponse.playabilityStatus.reason) ||
+                throw new error_1$1.default((playerResponse === null || playerResponse === void 0 ? void 0 : playerResponse.playabilityStatus.reason) ||
                     "Error while exctract palyer response", playerResponse === null || playerResponse === void 0 ? void 0 : playerResponse.playabilityStatus.status);
             }
         }
     });
     if (!playerResponse)
-        throw new error_1.default("Incorrect HTML, video information not found", "INCORRECT_HTML");
+        throw new error_1$1.default("Incorrect HTML, video information not found", "INCORRECT_HTML");
     const formats = exctractFormats(playerResponse) || [];
     const videoDetails = playerResponse.videoDetails;
     return { videoDetails, formats, adaptiveFormats: [] };
@@ -84143,17 +84143,16 @@ var __importDefault$1 = (commonjsGlobal && commonjsGlobal.__importDefault) || fu
 Object.defineProperty(tor, "__esModule", { value: true });
 const tor_control_1 = __importDefault$1(torControl);
 class MyTor extends tor_control_1.default {
-    constructor(host, port, password) {
+    constructor(torOptions) {
         super({
-            host: host || "127.0.0.1",
-            port: port || 9050,
-            password: password || "",
+            host: (torOptions === null || torOptions === void 0 ? void 0 : torOptions.host) || "127.0.0.1",
+            port: (torOptions === null || torOptions === void 0 ? void 0 : torOptions.port) || 9050,
+            password: (torOptions === null || torOptions === void 0 ? void 0 : torOptions.password) || "",
         });
     }
     newNym() {
         return __awaiter$1(this, void 0, void 0, function* () {
             try {
-                yield this.authenticate();
                 yield this.signal("NEWNYM");
                 console.info("Tor nodes have been changed.");
                 return;
@@ -84187,14 +84186,18 @@ const fetcher_1 = fetcher;
 const exctractor_1 = exctractor;
 const desipher_1 = desipher;
 const options_1 = options;
+const error_1 = __importDefault(error);
 const tor_1 = __importDefault(tor);
 class YoutubeDlp {
-    constructor(options) {
+    constructor(options, torOptions) {
         this.options = options || constants_1.defautlOptions;
+        this.tor = new tor_1.default(torOptions);
     }
     getVideoById(id_1) {
-        return __awaiter(this, arguments, void 0, function* (id, try_count = 0) {
+        return __awaiter(this, arguments, void 0, function* (id, try_count = 2) {
             try {
+                if (try_count >= constants_1.ALLOWED_TRY_COUNT)
+                    throw new error_1.default(`Failed to get piss from attempt: ${try_count}`);
                 try_count++;
                 if (!(0, check_regexp_1.checkVideoId)(id))
                     throw new Error("Invalid video id");
@@ -84224,19 +84227,20 @@ class YoutubeDlp {
                 };
             }
             catch (e) {
-                if (e.stack === "LOGIN_REQUIRED" &&
-                    this.options.torRequest &&
-                    try_count <= constants_1.ALLOWED_TRY_COUNT) {
-                    yield new tor_1.default().newNym();
-                    return this.getVideoById(id);
+                if (this.options.torRequest && try_count <= constants_1.ALLOWED_TRY_COUNT) {
+                    yield this.newTorNym();
+                    return yield this.getVideoById(id);
                 }
                 throw e;
             }
         });
     }
     getVideoByHtml(htmlContent_1) {
-        return __awaiter(this, arguments, void 0, function* (htmlContent, try_count = 5) {
+        return __awaiter(this, arguments, void 0, function* (htmlContent, try_count = 2) {
             try {
+                if (try_count >= constants_1.ALLOWED_TRY_COUNT)
+                    throw new error_1.default(`Failed to get piss from attempt: ${try_count}`);
+                try_count++;
                 const video = (0, exctractor_1.exctractVideoInfo)(htmlContent);
                 const scripts = yield (0, desipher_1.extractFunctions)(htmlContent);
                 const androidData = yield (0, fetcher_1.fetchAndroidJsonPlayer)(video.videoDetails.videoId, this.options);
@@ -84252,11 +84256,9 @@ class YoutubeDlp {
                 return validatedVideo;
             }
             catch (e) {
-                if (e.stack === "LOGIN_REQUIRED" &&
-                    this.options.torRequest &&
-                    try_count <= constants_1.ALLOWED_TRY_COUNT) {
-                    yield new tor_1.default().newNym();
-                    return this.getVideoByHtml(htmlContent);
+                if (this.options.torRequest && try_count <= constants_1.ALLOWED_TRY_COUNT) {
+                    yield this.newTorNym();
+                    return yield this.getVideoByHtml(htmlContent);
                 }
                 throw e;
             }
@@ -84264,7 +84266,7 @@ class YoutubeDlp {
     }
     newTorNym() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield new tor_1.default().newNym();
+            return yield this.tor.newNym();
         });
     }
 }

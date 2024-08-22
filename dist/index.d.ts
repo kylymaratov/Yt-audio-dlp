@@ -1,9 +1,10 @@
 import "./path-register";
-import { TOptions, TResponseOptions } from "./types/options";
+import { TOptions, TResponseOptions, TTorOptions } from "./types/options";
 import { TVideo } from "./types/video-details";
 declare class YoutubeDlp {
     private options;
-    constructor(options?: TOptions);
+    private tor;
+    constructor(options?: TOptions, torOptions?: TTorOptions);
     getVideoById(id: string, try_count?: number): Promise<{
         video: TVideo;
         responseOptions: TResponseOptions;

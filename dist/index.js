@@ -19,14 +19,18 @@ const fetcher_1 = require("@/core/fetcher");
 const exctractor_1 = require("@/core/exctractor");
 const desipher_1 = require("@/core/desipher");
 const options_1 = require("./core/options");
+const error_1 = __importDefault(require("./core/error"));
 const tor_1 = __importDefault(require("./core/tor"));
 class YoutubeDlp {
-    constructor(options) {
+    constructor(options, torOptions) {
         this.options = options || constants_1.defautlOptions;
+        this.tor = new tor_1.default(torOptions);
     }
     getVideoById(id_1) {
-        return __awaiter(this, arguments, void 0, function* (id, try_count = 0) {
+        return __awaiter(this, arguments, void 0, function* (id, try_count = 2) {
             try {
+                if (try_count >= constants_1.ALLOWED_TRY_COUNT)
+                    throw new error_1.default(`Failed to get piss from attempt: ${try_count}`);
                 try_count++;
                 if (!(0, check_regexp_1.checkVideoId)(id))
                     throw new Error("Invalid video id");
@@ -56,19 +60,20 @@ class YoutubeDlp {
                 };
             }
             catch (e) {
-                if (e.stack === "LOGIN_REQUIRED" &&
-                    this.options.torRequest &&
-                    try_count <= constants_1.ALLOWED_TRY_COUNT) {
-                    yield new tor_1.default().newNym();
-                    return this.getVideoById(id);
+                if (this.options.torRequest && try_count <= constants_1.ALLOWED_TRY_COUNT) {
+                    yield this.newTorNym();
+                    return yield this.getVideoById(id);
                 }
                 throw e;
             }
         });
     }
     getVideoByHtml(htmlContent_1) {
-        return __awaiter(this, arguments, void 0, function* (htmlContent, try_count = 5) {
+        return __awaiter(this, arguments, void 0, function* (htmlContent, try_count = 2) {
             try {
+                if (try_count >= constants_1.ALLOWED_TRY_COUNT)
+                    throw new error_1.default(`Failed to get piss from attempt: ${try_count}`);
+                try_count++;
                 const video = (0, exctractor_1.exctractVideoInfo)(htmlContent);
                 const scripts = yield (0, desipher_1.extractFunctions)(htmlContent);
                 const androidData = yield (0, fetcher_1.fetchAndroidJsonPlayer)(video.videoDetails.videoId, this.options);
@@ -84,11 +89,9 @@ class YoutubeDlp {
                 return validatedVideo;
             }
             catch (e) {
-                if (e.stack === "LOGIN_REQUIRED" &&
-                    this.options.torRequest &&
-                    try_count <= constants_1.ALLOWED_TRY_COUNT) {
-                    yield new tor_1.default().newNym();
-                    return this.getVideoByHtml(htmlContent);
+                if (this.options.torRequest && try_count <= constants_1.ALLOWED_TRY_COUNT) {
+                    yield this.newTorNym();
+                    return yield this.getVideoByHtml(htmlContent);
                 }
                 throw e;
             }
@@ -96,7 +99,7 @@ class YoutubeDlp {
     }
     newTorNym() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield new tor_1.default().newNym();
+            return yield this.tor.newNym();
         });
     }
 }
