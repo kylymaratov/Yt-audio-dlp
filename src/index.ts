@@ -137,16 +137,16 @@ class YoutubeDlp {
     }
 }
 
-const callEveryInterval = (interval: number = 10000): any => {
-    const ytb = new YoutubeDlp({ torRequest: true });
+// const callEveryInterval = (interval: number = 10000): any => {
+//     const ytb = new YoutubeDlp({ torRequest: true });
 
-    ytb.getVideoById("0Ybo3Nr-xLk").then((res) => console.log(res.video));
+//     ytb.getVideoById("0Ybo3Nr-xLk").then((res) => console.log(res.video));
 
-    setInterval(() => {
-        ytb.getVideoById("0Ybo3Nr-xLk").then((res) => console.log(res.video));
-    }, interval);
-};
+//     setInterval(() => {
+//         ytb.getVideoById("0Ybo3Nr-xLk").then((res) => console.log(res.video));
+//     }, interval);
+// };
 
-callEveryInterval();
+// callEveryInterval();
 
 export default YoutubeDlp;
