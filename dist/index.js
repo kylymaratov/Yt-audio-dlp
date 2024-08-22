@@ -36,7 +36,11 @@ class YoutubeDlp {
                 const scripts = yield (0, desipher_1.extractFunctions)(webData.htmlContent);
                 video === null || video === void 0 ? void 0 : video.formats.map((format) => (0, desipher_1.desipherDownloadURL)(format, scripts.decipher, scripts.nTransform));
                 video.adaptiveFormats = androidData.androidFormats.map((format) => (0, desipher_1.desipherDownloadURL)(format, scripts.decipher, scripts.nTransform));
-                const validatedVideo = yield (0, options_1.validateByOptions)(video, this.options);
+                const params = {
+                    userAgent: webData.userAgent,
+                    cookies: webData.cookies,
+                };
+                const validatedVideo = yield (0, options_1.validateByOptions)(video, this.options, params);
                 return {
                     video: validatedVideo,
                     responseOptions: {
@@ -72,7 +76,11 @@ class YoutubeDlp {
                     return (0, desipher_1.desipherDownloadURL)(format, scripts.decipher, scripts.nTransform);
                 });
                 video.adaptiveFormats = androidData.androidFormats.map((format) => (0, desipher_1.desipherDownloadURL)(format, scripts.decipher, scripts.nTransform));
-                const validatedVideo = (0, options_1.validateByOptions)(video, this.options);
+                const params = {
+                    userAgent: androidData.userAgent,
+                    cookies: androidData.cookies,
+                };
+                const validatedVideo = (0, options_1.validateByOptions)(video, this.options, params);
                 return validatedVideo;
             }
             catch (e) {

@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateByOptions = void 0;
 const axios_1 = __importDefault(require("axios"));
-const validateByOptions = (video, opt) => __awaiter(void 0, void 0, void 0, function* () {
+const validateByOptions = (video, opt, params) => __awaiter(void 0, void 0, void 0, function* () {
     if (opt.format === "audio") {
         video.adaptiveFormats = video === null || video === void 0 ? void 0 : video.adaptiveFormats.filter((f) => f.mimeType.includes("audio/"));
     }
@@ -27,7 +27,13 @@ const validateByOptions = (video, opt) => __awaiter(void 0, void 0, void 0, func
             try {
                 if (!f.url)
                     continue;
-                yield axios_1.default.head(f.url, { timeout: 5000 });
+                yield axios_1.default.head(f.url, {
+                    timeout: 5000,
+                    headers: {
+                        "User-Agent": params.userAgent,
+                        Cookies: params.cookies,
+                    },
+                });
                 work_formats.push(f);
             }
             catch (e) {
