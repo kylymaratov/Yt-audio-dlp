@@ -9,7 +9,7 @@ import { fetchAndroidJsonPlayer, fetchHtml } from "@/core/fetcher";
 import { exctractVideoInfo } from "@/core/exctractor";
 import { extractFunctions, desipherDownloadURL } from "@/core/desipher";
 import { validateByOptions } from "./core/options";
-import { TOptions, TResponseOptions } from "./types/options";
+import { TOptions, TResponseOptions, TTorOptions } from "./types/options";
 import { TVideo } from "./types/video-details";
 import ErrorModule from "./core/error";
 import MyTor from "./core/tor";
@@ -18,9 +18,9 @@ class YoutubeDlp {
     private options: TOptions;
     private tor: MyTor;
 
-    constructor(options?: TOptions) {
+    constructor(options?: TOptions, torOptions?: TTorOptions) {
         this.options = options || defautlOptions;
-        this.tor = new MyTor();
+        this.tor = new MyTor(torOptions);
     }
 
     async getVideoById(

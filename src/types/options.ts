@@ -14,3 +14,9 @@ export interface TResponseOptions {
         cookies: string;
     };
 }
+
+export interface TTorOptions {
+    host?: string;
+    port?: number;
+    password?: string;
+}

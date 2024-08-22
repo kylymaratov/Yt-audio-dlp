@@ -1,11 +1,12 @@
+import { TTorOptions } from "@/types/options";
 import TorControl from "tor-control";
 
 class MyTor extends TorControl {
-    constructor(host?: string, port?: number, password?: string) {
+    constructor(torOptions?: TTorOptions) {
         super({
-            host: host || "127.0.0.1",
-            port: port || 9050,
-            password: password || "",
+            host: torOptions?.host || "127.0.0.1",
+            port: torOptions?.port || 9050,
+            password: torOptions?.password || "",
         });
     }
 
