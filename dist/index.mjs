@@ -84020,14 +84020,14 @@ class YoutubeDlp {
         });
     }
 }
-const callEveryInterval = (interval = 10000) => {
-    const ytb = new YoutubeDlp({ torRequest: true });
-    ytb.getVideoById("0Ybo3Nr-xLk").then((res) => console.log(res.video));
-    setInterval(() => {
-        ytb.getVideoById("0Ybo3Nr-xLk").then((res) => console.log(res.video));
-    }, interval);
-};
-callEveryInterval();
+// const callEveryInterval = (interval: number = 10000): any => {
+//     const ytb = new YoutubeDlp({ torRequest: true });
+//     ytb.getVideoById("0Ybo3Nr-xLk").then((res) => console.log(res.video));
+//     setInterval(() => {
+//         ytb.getVideoById("0Ybo3Nr-xLk").then((res) => console.log(res.video));
+//     }, interval);
+// };
+// callEveryInterval();
 var _default = dist$2.default = YoutubeDlp;
 
 export { _default as default };
