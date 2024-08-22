@@ -18,15 +18,15 @@ import {
     getRandomYouTubeUserAgent,
 } from "@/helpers/user-agent";
 
-const socksAgent = new SocksProxyAgent("socks5://127.0.0.1:9050");
-
 export const fetchHtml = async (
     url: string,
     options: TOptions
 ): Promise<{ htmlContent: any; userAgent: string; cookies: string }> => {
+    let socksAgent = null;
     console.info(`Fetching html page: ${url}`);
 
     if (options.torRequest) {
+        socksAgent = new SocksProxyAgent("socks5://127.0.0.1:9050");
         console.log(
             `Tor proxy ${socksAgent.proxy.host}:${socksAgent.proxy.port}`
         );
@@ -40,6 +40,7 @@ export const fetchHtml = async (
             "User-Agent": userAgent,
         },
     });
+
     return {
         htmlContent: response.data,
         userAgent: userAgent,
@@ -70,6 +71,8 @@ export const fetchAndroidJsonPlayer = async (
     cookies: string;
 }> => {
     try {
+        const socksAgent = new SocksProxyAgent("socks5://127.0.0.1:9050");
+
         const { userAgent } = getRandomYouTubeUserAgent();
 
         const payload = {

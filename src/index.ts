@@ -11,16 +11,15 @@ import { extractFunctions, desipherDownloadURL } from "@/core/desipher";
 import { validateByOptions } from "./core/options";
 import { TOptions, TResponseOptions, TTorOptions } from "./types/options";
 import { TVideo } from "./types/video-details";
-import ErrorModule from "./core/error";
-import MyTor from "./core/tor";
+import TorControl from "./core/tor";
 
 class YoutubeDlp {
     private options: TOptions;
-    private tor: MyTor;
+    public tor: TorControl | null;
 
     constructor(options?: TOptions, torOptions?: TTorOptions) {
         this.options = options || defautlOptions;
-        this.tor = new MyTor(torOptions);
+        this.tor = options?.torRequest ? new TorControl(torOptions) : null;
     }
 
     async getVideoById(
@@ -28,19 +27,14 @@ class YoutubeDlp {
         try_count: number = 2
     ): Promise<{ video: TVideo; responseOptions: TResponseOptions }> {
         try {
-            if (try_count >= ALLOWED_TRY_COUNT)
-                throw new ErrorModule(
-                    `Failed to get piss from attempt: ${try_count}`
-                );
-
-            try_count++;
             if (!checkVideoId(id)) throw new Error("Invalid video id");
+
             const webData = await fetchHtml(
                 youtubeUrls.main + id,
                 this.options
             );
-            const video = exctractVideoInfo(webData.htmlContent);
 
+            const video = exctractVideoInfo(webData.htmlContent);
             const androidData = await fetchAndroidJsonPlayer(id, this.options);
             const scripts = await extractFunctions(webData.htmlContent);
 
@@ -85,9 +79,9 @@ class YoutubeDlp {
                 },
             };
         } catch (e) {
-            if (this.options.torRequest && try_count <= ALLOWED_TRY_COUNT) {
-                await this.newTorNym();
-                return await this.getVideoById(id);
+            if (this.tor && try_count <= ALLOWED_TRY_COUNT) {
+                await this.tor.updateNodes();
+                return await this.getVideoById(id, try_count + 1);
             }
             throw e;
         }
@@ -98,12 +92,6 @@ class YoutubeDlp {
         try_count: number = 2
     ): Promise<TVideo> {
         try {
-            if (try_count >= ALLOWED_TRY_COUNT)
-                throw new ErrorModule(
-                    `Failed to get piss from attempt: ${try_count}`
-                );
-
-            try_count++;
             const video = exctractVideoInfo(htmlContent);
             const scripts = await extractFunctions(htmlContent);
             const androidData = await fetchAndroidJsonPlayer(
@@ -140,17 +128,25 @@ class YoutubeDlp {
 
             return validatedVideo;
         } catch (e) {
-            if (this.options.torRequest && try_count <= ALLOWED_TRY_COUNT) {
-                await this.newTorNym();
-                return await this.getVideoByHtml(htmlContent);
+            if (this.tor && try_count <= ALLOWED_TRY_COUNT) {
+                await this.tor.updateNodes();
+                return await this.getVideoByHtml(htmlContent, try_count + 1);
             }
             throw e;
         }
     }
-
-    async newTorNym() {
-        return await this.tor.newNym();
-    }
 }
+
+const callEveryInterval = (interval: number = 10000): any => {
+    const ytb = new YoutubeDlp({ torRequest: true });
+
+    ytb.getVideoById("0Ybo3Nr-xLk").then((res) => console.log(res.video));
+
+    setInterval(() => {
+        ytb.getVideoById("0Ybo3Nr-xLk").then((res) => console.log(res.video));
+    }, interval);
+};
+
+callEveryInterval();
 
 export default YoutubeDlp;

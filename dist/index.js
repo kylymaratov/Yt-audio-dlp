@@ -19,19 +19,15 @@ const fetcher_1 = require("@/core/fetcher");
 const exctractor_1 = require("@/core/exctractor");
 const desipher_1 = require("@/core/desipher");
 const options_1 = require("./core/options");
-const error_1 = __importDefault(require("./core/error"));
 const tor_1 = __importDefault(require("./core/tor"));
 class YoutubeDlp {
     constructor(options, torOptions) {
         this.options = options || constants_1.defautlOptions;
-        this.tor = new tor_1.default(torOptions);
+        this.tor = (options === null || options === void 0 ? void 0 : options.torRequest) ? new tor_1.default(torOptions) : null;
     }
     getVideoById(id_1) {
         return __awaiter(this, arguments, void 0, function* (id, try_count = 2) {
             try {
-                if (try_count >= constants_1.ALLOWED_TRY_COUNT)
-                    throw new error_1.default(`Failed to get piss from attempt: ${try_count}`);
-                try_count++;
                 if (!(0, check_regexp_1.checkVideoId)(id))
                     throw new Error("Invalid video id");
                 const webData = yield (0, fetcher_1.fetchHtml)(constants_1.youtubeUrls.main + id, this.options);
@@ -60,9 +56,9 @@ class YoutubeDlp {
                 };
             }
             catch (e) {
-                if (this.options.torRequest && try_count <= constants_1.ALLOWED_TRY_COUNT) {
-                    yield this.newTorNym();
-                    return yield this.getVideoById(id);
+                if (this.tor && try_count <= constants_1.ALLOWED_TRY_COUNT) {
+                    yield this.tor.updateNodes();
+                    return yield this.getVideoById(id, try_count + 1);
                 }
                 throw e;
             }
@@ -71,9 +67,6 @@ class YoutubeDlp {
     getVideoByHtml(htmlContent_1) {
         return __awaiter(this, arguments, void 0, function* (htmlContent, try_count = 2) {
             try {
-                if (try_count >= constants_1.ALLOWED_TRY_COUNT)
-                    throw new error_1.default(`Failed to get piss from attempt: ${try_count}`);
-                try_count++;
                 const video = (0, exctractor_1.exctractVideoInfo)(htmlContent);
                 const scripts = yield (0, desipher_1.extractFunctions)(htmlContent);
                 const androidData = yield (0, fetcher_1.fetchAndroidJsonPlayer)(video.videoDetails.videoId, this.options);
@@ -89,18 +82,21 @@ class YoutubeDlp {
                 return validatedVideo;
             }
             catch (e) {
-                if (this.options.torRequest && try_count <= constants_1.ALLOWED_TRY_COUNT) {
-                    yield this.newTorNym();
-                    return yield this.getVideoByHtml(htmlContent);
+                if (this.tor && try_count <= constants_1.ALLOWED_TRY_COUNT) {
+                    yield this.tor.updateNodes();
+                    return yield this.getVideoByHtml(htmlContent, try_count + 1);
                 }
                 throw e;
             }
         });
     }
-    newTorNym() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield this.tor.newNym();
-        });
-    }
 }
+const callEveryInterval = (interval = 10000) => {
+    const ytb = new YoutubeDlp({ torRequest: true });
+    ytb.getVideoById("0Ybo3Nr-xLk").then((res) => console.log(res.video));
+    setInterval(() => {
+        ytb.getVideoById("0Ybo3Nr-xLk").then((res) => console.log(res.video));
+    }, interval);
+};
+callEveryInterval();
 exports.default = YoutubeDlp;

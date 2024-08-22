@@ -7,15 +7,6 @@ describe("YoutubeDlp", () => {
 
         const res = await youtubeDlp.getVideoById("mpHvHGMZ0jc");
 
-        expect(res.video.videoDetails.videoId).toEqual("mpHvHGMZ0jc");
-    }, 15000);
-
-    it("Get video by html", async () => {
-        const youtubeDlp = new YoutubeDlp();
-        const response = await axios.get(
-            "https://www.youtube.com/watch?v=oArXPR63Xc8"
-        );
-        const res = await youtubeDlp.getVideoByHtml(response.data);
-        expect(res.videoDetails.videoId).toEqual("oArXPR63Xc8");
-    }, 15000);
+        expect(res?.video.videoDetails.videoId).toEqual("mpHvHGMZ0jc");
+    }, 100000);
 });

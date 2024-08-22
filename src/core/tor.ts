@@ -1,27 +1,98 @@
 import { TTorOptions } from "@/types/options";
-import TorControl from "tor-control";
+import net, { Socket } from "net";
 
-class MyTor extends TorControl {
+class TorControl {
+    private host: string;
+    private port: number;
+    private password: string;
+    private client: Socket | null;
+    private connected: boolean;
+
     constructor(torOptions?: TTorOptions) {
-        super({
-            host: torOptions?.host || "127.0.0.1",
-            port: torOptions?.port || 9050,
-            password: torOptions?.password || "",
+        this.host = torOptions?.host || "127.0.0.1";
+        this.port = torOptions?.port || 9050;
+        this.password = torOptions?.password || "";
+        this.client = null;
+        this.connected = false;
+        this.connect().catch((err) =>
+            console.error("Connection error:", err.message)
+        );
+    }
+
+    private connect(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.client = new net.Socket();
+
+            this.client.connect(this.port, this.host, () => {
+                this.client!.write(`AUTHENTICATE "${this.password}"\r\n`);
+            });
+
+            this.client.on("data", (data: Buffer) => {
+                const response = data.toString();
+
+                if (response.includes("250 OK")) {
+                    this.connected = true;
+                    resolve();
+                } else if (response.includes("515 Authentication failed")) {
+                    reject(new Error("Authentication failed"));
+                } else {
+                    reject(new Error("Unexpected response: " + response));
+                }
+            });
+
+            this.client.on("error", (err: Error) => {
+                console.error("Connection error:", err.message);
+                reject(err);
+            });
+
+            this.client.on("end", () => {
+                this.connected = false;
+            });
         });
     }
 
-    async newNym() {
+    private sendCommand(command: string): Promise<string> {
+        return new Promise((resolve, reject) => {
+            if (!this.connected || !this.client) {
+                return reject(new Error("Not connected to Tor control port"));
+            }
+
+            console.log(`Sending command: ${command}`);
+            this.client.write(`${command}\r\n`);
+
+            const onData = (data: Buffer) => {
+                const response = data.toString();
+                console.log("Received data:", response);
+
+                if (response.includes("250 OK")) {
+                    this.client!.removeListener("data", onData);
+                    resolve(response);
+                } else {
+                    this.client!.removeListener("data", onData);
+                    reject(new Error("Error executing command: " + response));
+                }
+            };
+
+            this.client.on("data", onData);
+        });
+    }
+
+    public async updateNodes(): Promise<void> {
         try {
-            await this.signal("NEWNYM");
-
-            console.info("Tor nodes have been changed.");
-
-            return;
+            await this.connect(); // Ensure connected before sending command
+            const response = await this.sendCommand("SIGNAL NEWNYM");
+            console.log("Tor nodes updated successfully:", response);
         } catch (err) {
-            console.error("Error:", err);
-            throw err;
+            console.error(
+                "Failed to update Tor nodes:",
+                (err as Error).message
+            );
+        } finally {
+            if (this.client) {
+                this.client.end();
+            }
         }
     }
 }
 
-export default MyTor;
+export default TorControl;

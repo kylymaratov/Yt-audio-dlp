@@ -1,7 +1,13 @@
 import { TTorOptions } from "@/types/options";
-import TorControl from "tor-control";
-declare class MyTor extends TorControl {
+declare class TorControl {
+    private host;
+    private port;
+    private password;
+    private client;
+    private connected;
     constructor(torOptions?: TTorOptions);
-    newNym(): Promise<void>;
+    private connect;
+    private sendCommand;
+    updateNodes(): Promise<void>;
 }
-export default MyTor;
+export default TorControl;

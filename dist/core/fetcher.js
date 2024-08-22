@@ -21,11 +21,12 @@ const regexp_1 = require("@/regexp/regexp");
 const utils_1 = require("@/helpers/utils");
 const error_1 = __importDefault(require("./error"));
 const user_agent_1 = require("@/helpers/user-agent");
-const socksAgent = new socks_proxy_agent_1.SocksProxyAgent("socks5://127.0.0.1:9050");
 const fetchHtml = (url, options) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
+    let socksAgent = null;
     console.info(`Fetching html page: ${url}`);
     if (options.torRequest) {
+        socksAgent = new socks_proxy_agent_1.SocksProxyAgent("socks5://127.0.0.1:9050");
         console.log(`Tor proxy ${socksAgent.proxy.host}:${socksAgent.proxy.port}`);
     }
     const userAgent = (0, user_agent_1.getRandomUserAgent)();
@@ -57,6 +58,7 @@ exports.fetchtHTML5Player = fetchtHTML5Player;
 const fetchAndroidJsonPlayer = (videoId, options) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
+        const socksAgent = new socks_proxy_agent_1.SocksProxyAgent("socks5://127.0.0.1:9050");
         const { userAgent } = (0, user_agent_1.getRandomYouTubeUserAgent)();
         const payload = {
             videoId,

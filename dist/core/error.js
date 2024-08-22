@@ -6,7 +6,6 @@ class ErrorModule extends Error {
         this.message = message;
         this.name = ErrorModule.name;
         this.stack = reason;
-        console.error(`Throw error: ${this.name}, message: ${this.message}, reason: ${reason}`);
         Error.captureStackTrace(this, ErrorModule);
     }
 }
