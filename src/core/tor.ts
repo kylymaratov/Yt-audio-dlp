@@ -11,7 +11,6 @@ class MyTor extends TorControl {
 
     async newNym() {
         try {
-            await this.authenticate();
             await this.signal("NEWNYM");
 
             console.info("Tor nodes have been changed.");

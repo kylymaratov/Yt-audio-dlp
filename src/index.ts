@@ -16,16 +16,23 @@ import MyTor from "./core/tor";
 
 class YoutubeDlp {
     private options: TOptions;
+    private tor: MyTor;
 
     constructor(options?: TOptions) {
         this.options = options || defautlOptions;
+        this.tor = new MyTor();
     }
 
     async getVideoById(
         id: string,
-        try_count: number = 0
+        try_count: number = 2
     ): Promise<{ video: TVideo; responseOptions: TResponseOptions }> {
         try {
+            if (try_count >= ALLOWED_TRY_COUNT)
+                throw new ErrorModule(
+                    `Failed to get piss from attempt: ${try_count}`
+                );
+
             try_count++;
             if (!checkVideoId(id)) throw new Error("Invalid video id");
             const webData = await fetchHtml(
@@ -78,13 +85,9 @@ class YoutubeDlp {
                 },
             };
         } catch (e) {
-            if (
-                (e as ErrorModule).stack === "LOGIN_REQUIRED" &&
-                this.options.torRequest &&
-                try_count <= ALLOWED_TRY_COUNT
-            ) {
-                await new MyTor().newNym();
-                return this.getVideoById(id);
+            if (this.options.torRequest && try_count <= ALLOWED_TRY_COUNT) {
+                await this.newTorNym();
+                return await this.getVideoById(id);
             }
             throw e;
         }
@@ -92,9 +95,15 @@ class YoutubeDlp {
 
     async getVideoByHtml(
         htmlContent: string,
-        try_count: number = 5
+        try_count: number = 2
     ): Promise<TVideo> {
         try {
+            if (try_count >= ALLOWED_TRY_COUNT)
+                throw new ErrorModule(
+                    `Failed to get piss from attempt: ${try_count}`
+                );
+
+            try_count++;
             const video = exctractVideoInfo(htmlContent);
             const scripts = await extractFunctions(htmlContent);
             const androidData = await fetchAndroidJsonPlayer(
@@ -131,20 +140,16 @@ class YoutubeDlp {
 
             return validatedVideo;
         } catch (e) {
-            if (
-                (e as ErrorModule).stack === "LOGIN_REQUIRED" &&
-                this.options.torRequest &&
-                try_count <= ALLOWED_TRY_COUNT
-            ) {
-                await new MyTor().newNym();
-                return this.getVideoByHtml(htmlContent);
+            if (this.options.torRequest && try_count <= ALLOWED_TRY_COUNT) {
+                await this.newTorNym();
+                return await this.getVideoByHtml(htmlContent);
             }
             throw e;
         }
     }
 
     async newTorNym() {
-        return await new MyTor().newNym();
+        return await this.tor.newNym();
     }
 }
 
