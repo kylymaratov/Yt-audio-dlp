@@ -80,7 +80,7 @@ class YoutubeDlp {
             };
         } catch (e) {
             if (this.tor && try_count <= ALLOWED_TRY_COUNT) {
-                await this.tor.updateNodes();
+                await this.tor.reloadNetwork();
                 return await this.getVideoById(id, try_count + 1);
             }
             throw e;
@@ -129,24 +129,12 @@ class YoutubeDlp {
             return validatedVideo;
         } catch (e) {
             if (this.tor && try_count <= ALLOWED_TRY_COUNT) {
-                await this.tor.updateNodes();
+                await this.tor.reloadNetwork();
                 return await this.getVideoByHtml(htmlContent, try_count + 1);
             }
             throw e;
         }
     }
 }
-
-// const callEveryInterval = (interval: number = 10000): any => {
-//     const ytb = new YoutubeDlp({ torRequest: true });
-
-//     ytb.getVideoById("0Ybo3Nr-xLk").then((res) => console.log(res.video));
-
-//     setInterval(() => {
-//         ytb.getVideoById("0Ybo3Nr-xLk").then((res) => console.log(res.video));
-//     }, interval);
-// };
-
-// callEveryInterval();
 
 export default YoutubeDlp;

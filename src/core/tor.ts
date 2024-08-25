@@ -57,12 +57,10 @@ class TorControl {
                 return reject(new Error("Not connected to Tor control port"));
             }
 
-            console.log(`Sending command: ${command}`);
             this.client.write(`${command}\r\n`);
 
             const onData = (data: Buffer) => {
                 const response = data.toString();
-                console.log("Received data:", response);
 
                 if (response.includes("250 OK")) {
                     this.client!.removeListener("data", onData);
@@ -79,12 +77,26 @@ class TorControl {
 
     public async updateNodes(): Promise<void> {
         try {
-            await this.connect(); // Ensure connected before sending command
-            const response = await this.sendCommand("SIGNAL NEWNYM");
-            console.log("Tor nodes updated successfully:", response);
+            await this.connect();
+            await this.sendCommand("SIGNAL NEWNYM");
         } catch (err) {
             console.error(
                 "Failed to update Tor nodes:",
+                (err as Error).message
+            );
+        } finally {
+            if (this.client) {
+                this.client.end();
+            }
+        }
+    }
+    public async reloadNetwork(): Promise<void> {
+        try {
+            await this.connect();
+            await this.sendCommand("SIGNAL RELOAD");
+        } catch (err) {
+            console.error(
+                "Failed to reload Tor network:",
                 (err as Error).message
             );
         } finally {
