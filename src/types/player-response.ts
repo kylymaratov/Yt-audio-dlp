@@ -1,8 +1,8 @@
 import { TStreamingData } from "./streaming-data";
-import { TVideoDetails } from "./video-details";
+import { TDetails } from "./audio";
 
 export interface TPlayerResponse {
-    videoDetails: TVideoDetails;
+    videoDetails: TDetails;
     streamingData: TStreamingData;
     playabilityStatus: {
         status: "LOGIN_REQUIRED" | "OK";

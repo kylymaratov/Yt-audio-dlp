@@ -1,4 +1,4 @@
-# Youtube-dlp 📹
+# Ytdl-audio 📹
 
 This is a library for web scraping YouTube. With this library you can get direct links to download video audio from YouTube
 
@@ -9,30 +9,20 @@ This is a library for web scraping YouTube. With this library you can get direct
 ## Usage
 
 ```
-import YoutubeDlp from "youtube-dlp";
+import YoutubeDlp from "ytdl-audio";
 
-/* Youtube-dl input options */
-const youtubeDlOptions = {
-    checkWorkingLinks: true,
-    format: "all" /* audio, video, all */,
-    torRequest: false
-}
+const ytdlAudio = new YtdlAudio();
 
-const youtubeDlp = new YoutubeDlp(youtubeDlOptions);
-
-youtubeDlp.getVideoById("lJIQrI15_c8")
+ytdlAudio.getAudioById("lJIQrI15_c8")
 .then(res => console.log(res))
 .catch(err => console.log(err))
 ```
 
-To prevent YouTube from blocking you for frequent requests, it is recommended to enable TorRequest to make requests via the Tor network.
-
-## Video
+## Audio
 
 ```
 {
-    video: {
-        videoDetails: {
+   details: {
               videoId: string;
               title: string;
               lengthSeconds: string;
@@ -54,18 +44,6 @@ To prevent YouTube from blocking you for frequent requests, it is recommended to
               isLiveContent: boolean;
         };
         formats: /* Video formats */;
-        adaptiveFormats: /* Video formats */;
-    };
-    responseOptions: {
-    web: {
-        userAgent: string;
-        cookies: string;
-    };
-    android: {
-        userAgent: string;
-        cookies: string;
-    };
-    }
 }
 
 ```

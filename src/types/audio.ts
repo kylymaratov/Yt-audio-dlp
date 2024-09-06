@@ -1,4 +1,5 @@
 import { TFormat } from "./format";
+import vm from "vm";
 
 export interface TThumbail {
     url: string;
@@ -6,7 +7,7 @@ export interface TThumbail {
     height: number;
 }
 
-export interface TVideoDetails {
+export interface TDetails {
     videoId: string;
     title: string;
     lengthSeconds: string;
@@ -24,8 +25,12 @@ export interface TVideoDetails {
     isLiveContent: boolean;
 }
 
-export interface TVideo {
-    videoDetails: TVideoDetails;
+export interface TAudio {
+    details: TDetails;
     formats: TFormat[];
-    adaptiveFormats: TFormat[];
+}
+
+export interface TScripts {
+    decipher: vm.Script | null;
+    nTransform: vm.Script | null;
 }

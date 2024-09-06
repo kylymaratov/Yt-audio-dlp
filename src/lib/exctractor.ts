@@ -1,8 +1,14 @@
+import * as cheerio from "cheerio";
+import { streamingDataFormats } from "@/helpers/constants";
+import { HTML_PAGE_SCRIPT_REGEX } from "@/regexp/regexp";
+import { TFormat } from "../types/format";
+import { TPlayerResponse } from "../types/player-response";
+import { TSteamingDataFormat } from "../types/streaming-data";
+import { TAudio, TScripts } from "../types/audio";
+import ErrorModule from "./error";
+import { desipherDownloadURL } from "./desipher";
 import vm from "vm";
-import querystring from "querystring";
-//
 import { fetchtHTML5Player } from "./fetcher";
-import { TFormat } from "@/types/format";
 import {
     DECIPHER_ARGUMENT,
     DECIPHER_FUNC_NAME,
@@ -14,6 +20,77 @@ import {
     N_TRANSFORM_NAME_REGEXPS,
     N_TRANSFORM_REGEXP,
 } from "@/regexp/regexp";
+import { TFetchHTMLResponse } from "@/types/response";
+
+const exctractAudioInfo = (htmlContent: string, scripts: TScripts): TAudio => {
+    const $ = cheerio.load(htmlContent);
+    const scriptTags = $("script");
+
+    let playerResponse: TPlayerResponse | null = null;
+
+    scriptTags.each((_, scriptTag) => {
+        const scriptContent = $(scriptTag).html();
+        if (scriptContent) {
+            const match = scriptContent.match(HTML_PAGE_SCRIPT_REGEX);
+
+            if (!match) return;
+
+            playerResponse = JSON.parse(match[1]);
+
+            if (playerResponse?.playabilityStatus.status === "LOGIN_REQUIRED") {
+                throw new ErrorModule(
+                    "Many requests, login required",
+                    playerResponse.playabilityStatus.status
+                );
+            }
+            if (playerResponse?.playabilityStatus.status !== "OK") {
+                throw new ErrorModule(
+                    playerResponse?.playabilityStatus.reason ||
+                        "Error while exctract palyer response",
+                    playerResponse?.playabilityStatus.status
+                );
+            }
+        }
+    });
+    if (!playerResponse)
+        throw new ErrorModule(
+            "Incorrect HTML, video information not found",
+            "INCORRECT_HTML"
+        );
+
+    const formats = exctractFormats(playerResponse, scripts) || [];
+
+    const details = (playerResponse as TPlayerResponse).videoDetails;
+
+    return { details, formats };
+};
+
+const exctractFormats = (
+    playerResponse: TPlayerResponse,
+    scripts: TScripts
+) => {
+    const formats: TFormat[] = [];
+    const streamingData = playerResponse.streamingData || {};
+
+    try {
+        streamingDataFormats.forEach((dataType) => {
+            streamingData[dataType as TSteamingDataFormat].forEach((format) => {
+                if (format) {
+                    const decodedFormat = desipherDownloadURL(
+                        format,
+                        scripts.decipher,
+                        scripts.nTransform
+                    );
+                    formats.push(decodedFormat);
+                }
+            });
+        });
+    } catch {
+        return [];
+    }
+
+    return formats;
+};
 
 const matchRegex = (regex: string, str: string): RegExpMatchArray => {
     const match = str.match(new RegExp(regex, "s"));
@@ -141,55 +218,13 @@ const extractNTransform = (body: string): vm.Script | null => {
 };
 
 const extractFunctions = async (
-    htmlContent: string
-): Promise<{ decipher: vm.Script | null; nTransform: vm.Script | null }> => {
-    const body = await fetchtHTML5Player(htmlContent);
+    webData: TFetchHTMLResponse
+): Promise<TScripts> => {
+    const body = await fetchtHTML5Player(webData);
     const decipher = extractDecipher(body);
     const nTransform = extractNTransform(body);
 
     return { decipher, nTransform };
 };
 
-const desipherDownloadURL = (
-    format: TFormat,
-    decipherScript: vm.Script | null,
-    nTransformScript: vm.Script | null
-): TFormat => {
-    const decipher = (url: string): string => {
-        if (!decipherScript) return url;
-        const args = querystring.parse(url);
-
-        if (!args.s) return args.url as string;
-
-        const components = new URL(decodeURIComponent(args.url as string));
-        const context: { [key: string]: string } = {};
-        context[DECIPHER_ARGUMENT] = decodeURIComponent(args.s as string);
-        const sig = decipherScript.runInNewContext(context);
-        components.searchParams.set("sig", sig);
-        return components.toString();
-    };
-
-    const nTransform = (url: string): string => {
-        const components = new URL(decodeURIComponent(url));
-
-        const n = components.searchParams.get("n");
-
-        if (!n || !nTransformScript) return url;
-        const context: { [key: string]: string } = {};
-        context[N_ARGUMENT] = n;
-        const ncode = nTransformScript.runInNewContext(context);
-        components.searchParams.set("n", ncode);
-        return components.toString();
-    };
-    const isCipher = !format.url;
-    const url = format.signatureCipher || format.url || format.cipher || "";
-
-    format.url = nTransform(isCipher ? decipher(url) : url);
-
-    delete format.cipher;
-    delete format.signatureCipher;
-
-    return format;
-};
-
-export { extractFunctions, desipherDownloadURL };
+export { exctractAudioInfo, extractFunctions };
