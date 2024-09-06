@@ -18,11 +18,12 @@ ytdlAudio.getAudioById("lJIQrI15_c8")
 .catch(err => console.log(err))
 ```
 
-## Audio
+## API Response
 
 ```
 {
-   details: {
+  audio: {
+    details: {
               videoId: string;
               title: string;
               lengthSeconds: string;
@@ -43,15 +44,8 @@ ytdlAudio.getAudioById("lJIQrI15_c8")
               isUnpluggedCorpus: boolean;
               isLiveContent: boolean;
         };
-        formats: /* Video formats */;
-}
-
-```
-
-## Format
-
-```
-{
+        formats: [
+          {
     itag: number;
     mimeType: string;
     bitrate: number;
@@ -74,5 +68,12 @@ ytdlAudio.getAudioById("lJIQrI15_c8")
     cipher?: string;
     ncode: string;
     sig: string;
+          }
+        ]
+  }
+  headers: / Headers /
+  stream: / Audio stream /
 }
+
+
 ```
