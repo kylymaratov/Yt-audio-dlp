@@ -36,11 +36,4 @@ class YoutubeDlp {
     }
 }
 
-new YoutubeDlp()
-    .getAudioById("pv8dv_CA580")
-    .then((res) => {
-        res.stream.pipe(createWriteStream(`${res.audio.details.title}.webm`));
-    })
-    .catch((err) => console.log(err));
-
 export default YoutubeDlp;

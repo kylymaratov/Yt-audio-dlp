@@ -14,7 +14,6 @@ const check_regexp_1 = require("@/regexp/check-regexp");
 const fetcher_1 = require("@/lib/fetcher");
 const exctractor_1 = require("@/lib/exctractor");
 const stream_1 = require("./lib/stream");
-const fs_1 = require("fs");
 class YoutubeDlp {
     getAudioById(id) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -40,10 +39,4 @@ class YoutubeDlp {
         });
     }
 }
-new YoutubeDlp()
-    .getAudioById("pv8dv_CA580")
-    .then((res) => {
-    res.stream.pipe((0, fs_1.createWriteStream)(`${res.audio.details.title}.webm`));
-})
-    .catch((err) => console.log(err));
 exports.default = YoutubeDlp;

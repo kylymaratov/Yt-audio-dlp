@@ -10,9 +10,7 @@
         "test": "jest"
     },
     "keywords": [
-        "youtube-parser",
-        "parser",
-        "web-scrapping"
+        "youtube-audio-webm"
     ],
     "author": "KLM",
     "license": "MIT",
@@ -22,9 +20,7 @@
         "cheerio": "^1.0.0",
         "fluent-ffmpeg": "^2.1.3",
         "module-alias": "^2.2.3",
-        "socks-proxy-agent": "^8.0.4",
-        "tor-control": "^0.0.3",
-        "youtube-dlp": "^1.0.3"
+        "socks-proxy-agent": "^8.0.4"
     },
     "repository": {
         "url": "https://github.com/kylymaratov/ytdl-audio.git",
