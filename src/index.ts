@@ -10,8 +10,9 @@ import { clearCustomLogs } from "./lib/logs";
 
 class YoutubeDlp {
     async getAudioById(
-        id: string
-    ): Promise<{ audio: TAudio; stream: Readable; headers: any }> {
+        id: string,
+        withStream?: boolean
+    ): Promise<{ audio: TAudio; stream: Readable | null; headers: any }> {
         try {
             if (!checkVideoId(id)) throw new Error("Invalid video id");
 
@@ -20,10 +21,14 @@ class YoutubeDlp {
             const scripts = await extractFunctions(webData);
             const audio = exctractAudioInfo(webData.htmlContent, scripts);
 
-            const stream = await getAudioStream({
-                audio,
-                headers: webData.headers,
-            });
+            let stream: Readable | null = null;
+
+            if (withStream) {
+                stream = await getAudioStream({
+                    audio,
+                    headers: webData.headers,
+                });
+            }
 
             return {
                 audio,
