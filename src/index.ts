@@ -6,7 +6,7 @@ import { exctractAudioInfo, extractFunctions } from "@/lib/exctractor";
 import { TAudio } from "./types/audio";
 import { getAudioStream } from "./lib/stream";
 import { Readable } from "stream";
-import { createWriteStream } from "fs";
+import { clearCustomLogs } from "./lib/logs";
 
 class YoutubeDlp {
     async getAudioById(
@@ -32,6 +32,8 @@ class YoutubeDlp {
             };
         } catch (e) {
             throw e;
+        } finally {
+            clearCustomLogs();
         }
     }
 }

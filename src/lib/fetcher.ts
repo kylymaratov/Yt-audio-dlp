@@ -2,12 +2,13 @@ import axios from "axios";
 import { youtubeUrls } from "@/helpers/constants";
 import { HTML5_PLAYER_REGEX } from "@/regexp/regexp";
 import { getRandomUserAgent } from "@/helpers/user-agent";
-import { TFetchHTMLResponse } from "@/types/response";
+import { TFetchHTMLResponse } from "@/types/player-response";
+import { TFormat } from "@/types/format";
+import { Readable } from "stream";
+import { customLog } from "./logs";
 
 export const fetchHtml = async (id: string): Promise<TFetchHTMLResponse> => {
     const url = youtubeUrls.main + id + "&sttick=0";
-
-    console.info(`Fetching html page: ${url}`);
 
     const userAgent = getRandomUserAgent();
 
@@ -29,6 +30,8 @@ export const fetchHtml = async (id: string): Promise<TFetchHTMLResponse> => {
     headers["Cookie"] = response.headers["set-cookie"]?.toString() || "";
     headers["Referer"] = url;
 
+    customLog(`Fetching html page: ${url} success!`);
+
     return {
         htmlContent: response.data,
         headers,
@@ -42,11 +45,25 @@ export const fetchtHTML5Player = async (webData: TFetchHTMLResponse) => {
         : "";
     const requestUrl = youtubeUrls.base + html5PlayerUrl;
 
-    console.info(`Fetching player js: ${requestUrl}`);
-
     const response = await axios.get(requestUrl, {
         headers: webData.headers,
     });
 
+    customLog(`Fetching player js: ${requestUrl} success!`);
+
     return response.data;
+};
+
+export const fetchVideo = async (
+    format: TFormat,
+    headers: any
+): Promise<Readable> => {
+    const response = await axios.get(format.url, {
+        headers,
+        responseType: "arraybuffer",
+        timeout: 60000,
+    });
+    customLog(`Fetching video ${format.mimeType} success!`);
+
+    return Readable.from(response.data);
 };

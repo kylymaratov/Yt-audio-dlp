@@ -1,20 +1,7 @@
-import axios from "axios";
 import ffmpeg from "fluent-ffmpeg";
 import { PassThrough, Readable } from "stream";
-import { TFormat } from "@/types/format";
 import { TAudio } from "@/types/audio";
-
-async function fetchVideo(format: TFormat, headers: any): Promise<Readable> {
-    console.info(`Fetching ${format.mimeType}`);
-
-    const response = await axios.get(format.url, {
-        headers,
-        responseType: "arraybuffer",
-        timeout: 60000,
-    });
-
-    return Readable.from(response.data);
-}
+import { fetchVideo } from "./fetcher";
 
 function parseTimemark(timemark: string): number {
     const [hours, minutes, seconds] = timemark.split(":").map(Number);
@@ -44,13 +31,16 @@ function convertVideoToAudio(
                     (parseTimemark(progress.timemark) /
                         Number(audio.details.lengthSeconds)) *
                     100;
-                process.stdout.write(`\r Progress: ${percentage.toFixed(2)}%`);
+                process.stdout.write(
+                    `\r Compiling progress: ${percentage.toFixed(2)}%`
+                );
             })
             .on("error", (err) => reject(err))
             .pipe(temporaryBuffer, { end: true });
 
         temporaryBuffer.on("end", () => {
             audioStream.push(null);
+            process.stdout.write("\r\x1b[2K");
             resolve(audioStream);
         });
 

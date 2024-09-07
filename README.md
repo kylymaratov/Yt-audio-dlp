@@ -4,7 +4,7 @@ This is a library for web scraping YouTube. With this library you can get direct
 
 ## Installation
 
-`npm install youtube-dlp`
+`npm install ytdl-audio`
 
 ## Usage
 

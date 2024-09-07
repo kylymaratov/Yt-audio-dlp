@@ -14,6 +14,7 @@ const check_regexp_1 = require("@/regexp/check-regexp");
 const fetcher_1 = require("@/lib/fetcher");
 const exctractor_1 = require("@/lib/exctractor");
 const stream_1 = require("./lib/stream");
+const logs_1 = require("./lib/logs");
 class YoutubeDlp {
     getAudioById(id) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -35,6 +36,9 @@ class YoutubeDlp {
             }
             catch (e) {
                 throw e;
+            }
+            finally {
+                (0, logs_1.clearCustomLogs)();
             }
         });
     }

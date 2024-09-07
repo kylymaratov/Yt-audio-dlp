@@ -20,4 +20,19 @@ export default [
             json(),
         ],
     },
+    {
+        input: "./dist/index.js",
+        output: {
+            file: "dist/index.cjs",
+            format: "cjs",
+        },
+        plugins: [
+            alias({
+                entries: [{ find: "@", replacement: path.resolve("dist") }],
+            }),
+            resolve(),
+            commonjs(),
+            json(),
+        ],
+    },
 ];

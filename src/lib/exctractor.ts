@@ -20,7 +20,7 @@ import {
     N_TRANSFORM_NAME_REGEXPS,
     N_TRANSFORM_REGEXP,
 } from "@/regexp/regexp";
-import { TFetchHTMLResponse } from "@/types/response";
+import { TFetchHTMLResponse } from "@/types/player-response";
 
 const exctractAudioInfo = (htmlContent: string, scripts: TScripts): TAudio => {
     const $ = cheerio.load(htmlContent);

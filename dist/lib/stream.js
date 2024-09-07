@@ -13,20 +13,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAudioStream = getAudioStream;
-const axios_1 = __importDefault(require("axios"));
 const fluent_ffmpeg_1 = __importDefault(require("fluent-ffmpeg"));
 const stream_1 = require("stream");
-function fetchVideo(format, headers) {
-    return __awaiter(this, void 0, void 0, function* () {
-        console.info(`Fetching ${format.mimeType}`);
-        const response = yield axios_1.default.get(format.url, {
-            headers,
-            responseType: "arraybuffer",
-            timeout: 60000,
-        });
-        return stream_1.Readable.from(response.data);
-    });
-}
+const fetcher_1 = require("./fetcher");
 function parseTimemark(timemark) {
     const [hours, minutes, seconds] = timemark.split(":").map(Number);
     return hours * 3600 + minutes * 60 + seconds;
@@ -49,12 +38,13 @@ function convertVideoToAudio(audio, videoStream) {
             const percentage = (parseTimemark(progress.timemark) /
                 Number(audio.details.lengthSeconds)) *
                 100;
-            process.stdout.write(`\r Progress: ${percentage.toFixed(2)}%`);
+            process.stdout.write(`\r Compiling progress: ${percentage.toFixed(2)}%`);
         })
             .on("error", (err) => reject(err))
             .pipe(temporaryBuffer, { end: true });
         temporaryBuffer.on("end", () => {
             audioStream.push(null);
+            process.stdout.write("\r\x1b[2K");
             resolve(audioStream);
         });
         temporaryBuffer.on("data", (chunk) => {
@@ -67,7 +57,7 @@ function convertVideoToAudio(audio, videoStream) {
 }
 function getAudioStream(_a) {
     return __awaiter(this, arguments, void 0, function* ({ audio, headers, }) {
-        const videoStream = yield fetchVideo(audio.formats[0], headers);
+        const videoStream = yield (0, fetcher_1.fetchVideo)(audio.formats[0], headers);
         const audioStream = yield convertVideoToAudio(audio, videoStream);
         return audioStream;
     });

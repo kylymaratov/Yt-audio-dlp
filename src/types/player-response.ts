@@ -10,3 +10,7 @@ export interface TPlayerResponse {
         contextParams: string;
     };
 }
+export interface TFetchHTMLResponse {
+    htmlContent: any;
+    headers: any;
+}
