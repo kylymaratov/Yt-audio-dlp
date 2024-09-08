@@ -1,6 +1,6 @@
 # Audio-downloder
 
-This is a library for parsing audio files from YouTube videos in the formats webm | mp3 | wav | opus | ogg.
+Lib for download from music platforms audio in webm, mp3, wav, opus, ogg formats
 
 ## Installation
 
@@ -8,12 +8,12 @@ This is a library for parsing audio files from YouTube videos in the formats web
 
 ## Usage
 
+### From Youtube
+
 ```
 import AudioDownloder from "audio-downloader";
 
 const audioDownloder = new AudioDownloder();
-
-/* Get audio from youtube */s
 
 (async function() {
    try {
