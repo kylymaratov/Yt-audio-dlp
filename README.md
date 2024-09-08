@@ -1,21 +1,23 @@
-# Ytdl-audio
+# Audio-downloder
 
 This is a library for parsing audio files from YouTube videos in the formats webm | mp3 | wav | opus | ogg.
 
 ## Installation
 
-`npm install ytdl-audio`
+`npm install audio-downloader`
 
 ## Usage
 
 ```
-import YoutubeDlp from "ytdl-audio";
+import AudioDownloder from "audio-downloader";
 
-const ytdlAudio = new YtdlAudio();
+const audioDownloder = new AudioDownloder();
+
+/* Get audio from youtube */s
 
 (async function() {
    try {
-    const {audio, stream, headers, options } = await ytdlAudio.getAudioById(/ VideoId /,
+    const {audio, stream, headers, options } = await audioDownloder.youtube.getAudioById(/ VideoId /,
     {
       outputFormat: "mp3",
       socks?: "Socks proxy link",
@@ -27,11 +29,4 @@ const ytdlAudio = new YtdlAudio();
   }
 })()
 
-fetchAudio();
-
-OR
-
-ytdlAudio.getAudioById(/ VideoId /)
-  .then(res => console.log(res))
-  .catch(err => console.log(err))
 ```

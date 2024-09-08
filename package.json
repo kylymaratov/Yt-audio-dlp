@@ -10,7 +10,9 @@
         "test": "jest"
     },
     "keywords": [
-        "youtube-audio-webm"
+        "audio",
+        "downloader",
+        "music"
     ],
     "author": "KLM",
     "license": "MIT",
