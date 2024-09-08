@@ -15,7 +15,12 @@ const ytdlAudio = new YtdlAudio();
 
 (async function() {
    try {
-    const {audio, stream, headers, options } = await ytdlAudio.getAudioById(/ VideoId /, {outputFormat: "mp3", socks?: "Socks proxy link", proxy?: {host: "HOST" port: "PORT", auth?: {username:"", password: ""}} });
+    const {audio, stream, headers, options } = await ytdlAudio.getAudioById(/ VideoId /,
+    {
+      outputFormat: "mp3",
+      socks?: "Socks proxy link",
+      proxy?: {host: "HOST" port: "PORT", auth?: {username:"", password: ""}}
+    });
 
   } catch (err) {
     console.error(err);
