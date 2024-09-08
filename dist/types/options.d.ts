@@ -1,7 +1,22 @@
 export interface TOptions {
-    format?: "audio" | "video" | "all";
-    checkWorkingLinks?: boolean;
-    torRequest?: boolean;
+    outputFormat?: TOutputFormats;
+    socks?: string;
+    proxy?: {
+        host: string;
+        port: number;
+        auth?: {
+            username: string;
+            password: string;
+        };
+    };
+}
+export type TOutputFormats = "webm" | "mp3" | "wav" | "opus" | "ogg";
+export declare enum TCodecs {
+    webm = "libvorbis",
+    mp3 = "libmp3lame",
+    wav = "pcm_s16le",
+    opus = "opus",
+    ogg = "libvorbis"
 }
 export interface TResponseOptions {
     web: {

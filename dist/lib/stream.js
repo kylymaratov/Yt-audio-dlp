@@ -16,11 +16,12 @@ exports.getAudioStream = getAudioStream;
 const fluent_ffmpeg_1 = __importDefault(require("fluent-ffmpeg"));
 const stream_1 = require("stream");
 const fetcher_1 = require("./fetcher");
+const options_1 = require("@/types/options");
 function parseTimemark(timemark) {
     const [hours, minutes, seconds] = timemark.split(":").map(Number);
     return hours * 3600 + minutes * 60 + seconds;
 }
-function convertVideoToAudio(audio, videoStream) {
+function convertVideoToAudio(audio, videoStream, outputFormat) {
     return new Promise((resolve, reject) => {
         const temporaryBuffer = new stream_1.PassThrough();
         const audioStream = new stream_1.Readable({
@@ -30,10 +31,10 @@ function convertVideoToAudio(audio, videoStream) {
             .input(videoStream)
             .inputFormat("mp4")
             .noVideo()
-            .audioCodec("libopus")
+            .audioCodec(options_1.TCodecs[outputFormat])
             .audioChannels(audio.formats[0].audioChannels)
             .outputOptions([`-b:a`, "128k", `-t`, audio.details.lengthSeconds])
-            .toFormat("webm")
+            .toFormat(outputFormat)
             .on("progress", (progress) => {
             const percentage = (parseTimemark(progress.timemark) /
                 Number(audio.details.lengthSeconds)) *
@@ -55,10 +56,10 @@ function convertVideoToAudio(audio, videoStream) {
         });
     });
 }
-function getAudioStream(_a) {
-    return __awaiter(this, arguments, void 0, function* ({ audio, headers, }) {
+function getAudioStream(audio, headers, outputFormat) {
+    return __awaiter(this, void 0, void 0, function* () {
         const videoStream = yield (0, fetcher_1.fetchVideo)(audio.formats[0], headers);
-        const audioStream = yield convertVideoToAudio(audio, videoStream);
+        const audioStream = yield convertVideoToAudio(audio, videoStream, outputFormat);
         return audioStream;
     });
 }

@@ -9,10 +9,10 @@ export const youtubeUrls = {
     androidPlayer: "https://youtubei.googleapis.com/youtubei/v1/player",
 };
 
-export const defautlOptions: TOptions = {
-    format: "all",
-    checkWorkingLinks: false,
-    torRequest: false,
+export const defaultOptions: TOptions = {
+    outputFormat: "webm",
+    proxy: undefined,
+    socks: undefined,
 };
 
 export const ALLOWED_TRY_COUNT = 3;

@@ -6,5 +6,5 @@ export declare const youtubeUrls: {
     mobile: string;
     androidPlayer: string;
 };
-export declare const defautlOptions: TOptions;
+export declare const defaultOptions: TOptions;
 export declare const ALLOWED_TRY_COUNT = 3;

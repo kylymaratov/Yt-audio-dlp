@@ -1,5 +1,6 @@
 import { TStreamingData } from "./streaming-data";
 import { TDetails } from "./audio";
+import { SocksProxyAgent } from "socks-proxy-agent";
 export interface TPlayerResponse {
     videoDetails: TDetails;
     streamingData: TStreamingData;
@@ -12,4 +13,13 @@ export interface TPlayerResponse {
 export interface TFetchHTMLResponse {
     htmlContent: any;
     headers: any;
+    socksProxy?: SocksProxyAgent;
+    proxy?: {
+        host: string;
+        port: number;
+        auth?: {
+            username: string;
+            password: string;
+        };
+    };
 }

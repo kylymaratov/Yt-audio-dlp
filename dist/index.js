@@ -15,23 +15,23 @@ const fetcher_1 = require("@/lib/fetcher");
 const exctractor_1 = require("@/lib/exctractor");
 const stream_1 = require("./lib/stream");
 const logs_1 = require("./lib/logs");
+const constants_1 = require("./helpers/constants");
 class YoutubeDlp {
-    getAudioById(id) {
+    getAudioById(id, options) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (!(0, check_regexp_1.checkVideoId)(id))
                     throw new Error("Invalid video id");
-                const webData = yield (0, fetcher_1.fetchHtml)(id);
+                options = Object.assign(Object.assign({}, constants_1.defaultOptions), options);
+                const webData = yield (0, fetcher_1.fetchHtml)(id, options);
                 const scripts = yield (0, exctractor_1.extractFunctions)(webData);
                 const audio = (0, exctractor_1.exctractAudioInfo)(webData.htmlContent, scripts);
-                const stream = yield (0, stream_1.getAudioStream)({
-                    audio,
-                    headers: webData.headers,
-                });
+                const stream = yield (0, stream_1.getAudioStream)(audio, webData.headers, options.outputFormat || "webm");
                 return {
                     audio,
                     stream,
                     headers: webData.headers,
+                    options,
                 };
             }
             catch (e) {

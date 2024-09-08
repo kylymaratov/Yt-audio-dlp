@@ -1,7 +1,5 @@
 import { Readable } from "stream";
 import { TAudio } from "@/types/audio";
-declare function getAudioStream({ audio, headers, }: {
-    audio: TAudio;
-    headers: any;
-}): Promise<Readable>;
+import { TOutputFormats } from "@/types/options";
+declare function getAudioStream(audio: TAudio, headers: any, outputFormat: TOutputFormats): Promise<Readable>;
 export { getAudioStream };

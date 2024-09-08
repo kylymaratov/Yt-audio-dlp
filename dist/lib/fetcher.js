@@ -19,9 +19,23 @@ const regexp_1 = require("@/regexp/regexp");
 const user_agent_1 = require("@/helpers/user-agent");
 const stream_1 = require("stream");
 const logs_1 = require("./logs");
-const fetchHtml = (id) => __awaiter(void 0, void 0, void 0, function* () {
+const socks_proxy_agent_1 = require("socks-proxy-agent");
+const fetchHtml = (id, options) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
+    let socksProxy;
     const url = constants_1.youtubeUrls.main + id + "&sttick=0";
+    if (options.socks) {
+        (0, logs_1.customLog)(`Fetching html page: ${url} with socks ${options.socks} ...`);
+        socksProxy = new socks_proxy_agent_1.SocksProxyAgent(options.socks);
+        options.proxy = undefined;
+    }
+    else if (options.proxy) {
+        options.socks = undefined;
+        (0, logs_1.customLog)(`Fetching html page: ${url} with proxy ${options.proxy.host} ...`);
+    }
+    else {
+        (0, logs_1.customLog)(`Fetching html page: ${url}...`);
+    }
     const userAgent = (0, user_agent_1.getRandomUserAgent)();
     const headers = {
         "User-Agent": userAgent,
@@ -35,13 +49,18 @@ const fetchHtml = (id) => __awaiter(void 0, void 0, void 0, function* () {
         "X-Requested-With": "XMLHttpRequest",
         Cookie: "",
     };
-    const response = yield axios_1.default.get(url, { headers });
+    const response = yield axios_1.default.get(url, {
+        headers,
+        proxy: options.proxy,
+        httpAgent: socksProxy,
+        httpsAgent: socksProxy,
+    });
     headers["Cookie"] = ((_a = response.headers["set-cookie"]) === null || _a === void 0 ? void 0 : _a.toString()) || "";
-    headers["Referer"] = url;
-    (0, logs_1.customLog)(`Fetching html page: ${url} success!`);
     return {
         htmlContent: response.data,
         headers,
+        socksProxy,
+        proxy: options.proxy,
     };
 });
 exports.fetchHtml = fetchHtml;
@@ -51,20 +70,23 @@ const fetchtHTML5Player = (webData) => __awaiter(void 0, void 0, void 0, functio
         ? html5PlayerRes[1] || html5PlayerRes[2]
         : "";
     const requestUrl = constants_1.youtubeUrls.base + html5PlayerUrl;
+    (0, logs_1.customLog)(`Fetching player js: ${requestUrl} ...`);
     const response = yield axios_1.default.get(requestUrl, {
         headers: webData.headers,
+        proxy: webData.proxy,
+        httpAgent: webData.socksProxy,
+        httpsAgent: webData.socksProxy,
     });
-    (0, logs_1.customLog)(`Fetching player js: ${requestUrl} success!`);
     return response.data;
 });
 exports.fetchtHTML5Player = fetchtHTML5Player;
 const fetchVideo = (format, headers) => __awaiter(void 0, void 0, void 0, function* () {
+    (0, logs_1.customLog)(`Fetching data bytes ${format.mimeType}`);
     const response = yield axios_1.default.get(format.url, {
         headers,
         responseType: "arraybuffer",
         timeout: 60000,
     });
-    (0, logs_1.customLog)(`Fetching video ${format.mimeType} success!`);
     return stream_1.Readable.from(response.data);
 });
 exports.fetchVideo = fetchVideo;

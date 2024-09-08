@@ -2,6 +2,7 @@ import ffmpeg from "fluent-ffmpeg";
 import { PassThrough, Readable } from "stream";
 import { TAudio } from "@/types/audio";
 import { fetchVideo } from "./fetcher";
+import { TCodecs, TOutputFormats } from "@/types/options";
 
 function parseTimemark(timemark: string): number {
     const [hours, minutes, seconds] = timemark.split(":").map(Number);
@@ -10,7 +11,8 @@ function parseTimemark(timemark: string): number {
 
 function convertVideoToAudio(
     audio: TAudio,
-    videoStream: Readable
+    videoStream: Readable,
+    outputFormat: TOutputFormats
 ): Promise<Readable> {
     return new Promise((resolve, reject) => {
         const temporaryBuffer = new PassThrough();
@@ -22,10 +24,10 @@ function convertVideoToAudio(
             .input(videoStream)
             .inputFormat("mp4")
             .noVideo()
-            .audioCodec("libopus")
+            .audioCodec(TCodecs[outputFormat])
             .audioChannels(audio.formats[0].audioChannels)
             .outputOptions([`-b:a`, "128k", `-t`, audio.details.lengthSeconds])
-            .toFormat("webm")
+            .toFormat(outputFormat)
             .on("progress", (progress) => {
                 const percentage =
                     (parseTimemark(progress.timemark) /
@@ -54,16 +56,18 @@ function convertVideoToAudio(
     });
 }
 
-async function getAudioStream({
-    audio,
-    headers,
-}: {
-    audio: TAudio;
-    headers: any;
-}): Promise<Readable> {
+async function getAudioStream(
+    audio: TAudio,
+    headers: any,
+    outputFormat: TOutputFormats
+): Promise<Readable> {
     const videoStream = await fetchVideo(audio.formats[0], headers);
 
-    const audioStream = await convertVideoToAudio(audio, videoStream);
+    const audioStream = await convertVideoToAudio(
+        audio,
+        videoStream,
+        outputFormat
+    );
 
     return audioStream;
 }
