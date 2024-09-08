@@ -16,7 +16,7 @@ exports.getAudioStream = getAudioStream;
 const fluent_ffmpeg_1 = __importDefault(require("fluent-ffmpeg"));
 const stream_1 = require("stream");
 const fetcher_1 = require("./fetcher");
-const options_1 = require("@/types/options");
+const options_1 = require("@/youtube/types/options");
 function parseTimemark(timemark) {
     const [hours, minutes, seconds] = timemark.split(":").map(Number);
     return hours * 3600 + minutes * 60 + seconds;

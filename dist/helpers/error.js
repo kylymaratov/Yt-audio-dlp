@@ -1,15 +1,12 @@
-import { ErrorReason } from "@/types/error";
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 class ErrorModule extends Error {
-    constructor(message: string, reason?: ErrorReason) {
+    constructor(message, reason) {
         super(message);
-
         this.message = message;
         this.name = ErrorModule.name;
         this.stack = reason;
-
         Error.captureStackTrace(this, ErrorModule);
     }
 }
-
-export default ErrorModule;
+exports.default = ErrorModule;

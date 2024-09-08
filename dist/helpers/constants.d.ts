@@ -1,10 +1,8 @@
-import { TOptions } from "@/types/options";
-export declare const streamingDataFormats: string[];
+import { TOptions } from "@/youtube/types/options";
 export declare const youtubeUrls: {
-    base: string;
     main: string;
-    mobile: string;
-    androidPlayer: string;
+    video: string;
+    shortLink: string;
+    internalPlayer: string;
 };
 export declare const defaultOptions: TOptions;
-export declare const ALLOWED_TRY_COUNT = 3;

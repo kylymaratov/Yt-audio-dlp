@@ -1,16 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ALLOWED_TRY_COUNT = exports.defaultOptions = exports.youtubeUrls = exports.streamingDataFormats = void 0;
-exports.streamingDataFormats = ["formats"];
+exports.defaultOptions = exports.youtubeUrls = void 0;
 exports.youtubeUrls = {
-    base: "https://www.youtube.com",
-    main: "https://www.youtube.com/watch?v=",
-    mobile: "https://youtu.be/",
-    androidPlayer: "https://youtubei.googleapis.com/youtubei/v1/player",
+    main: "https://www.youtube.com",
+    video: "https://www.youtube.com/watch?v=",
+    shortLink: "https://youtu.be/",
+    internalPlayer: "https://youtubei.googleapis.com/youtubei/v1/player",
 };
 exports.defaultOptions = {
     outputFormat: "webm",
     proxy: undefined,
     socks: undefined,
 };
-exports.ALLOWED_TRY_COUNT = 3;

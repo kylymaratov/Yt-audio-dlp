@@ -1,12 +1,10 @@
-import { TOptions } from "@/types/options";
-
-export const streamingDataFormats = ["formats"];
+import { TOptions } from "@/youtube/types/options";
 
 export const youtubeUrls = {
-    base: "https://www.youtube.com",
-    main: "https://www.youtube.com/watch?v=",
-    mobile: "https://youtu.be/",
-    androidPlayer: "https://youtubei.googleapis.com/youtubei/v1/player",
+    main: "https://www.youtube.com",
+    video: "https://www.youtube.com/watch?v=",
+    shortLink: "https://youtu.be/",
+    internalPlayer: "https://youtubei.googleapis.com/youtubei/v1/player",
 };
 
 export const defaultOptions: TOptions = {
@@ -14,5 +12,3 @@ export const defaultOptions: TOptions = {
     proxy: undefined,
     socks: undefined,
 };
-
-export const ALLOWED_TRY_COUNT = 3;

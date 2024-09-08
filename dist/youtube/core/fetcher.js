@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.fetchVideo = exports.fetchtHTML5Player = exports.fetchHtml = void 0;
 const axios_1 = __importDefault(require("axios"));
 const constants_1 = require("@/helpers/constants");
-const regexp_1 = require("@/regexp/regexp");
+const regexp_1 = require("@/youtube/regexp/regexp");
 const user_agent_1 = require("@/helpers/user-agent");
 const stream_1 = require("stream");
 const logs_1 = require("./logs");
@@ -23,7 +23,7 @@ const socks_proxy_agent_1 = require("socks-proxy-agent");
 const fetchHtml = (id, options) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     let socksProxy;
-    const url = constants_1.youtubeUrls.main + id + "&sttick=0";
+    const url = constants_1.youtubeUrls.video + id + "&sttick=0";
     if (options.socks) {
         (0, logs_1.customLog)(`Fetching html page: ${url} with socks ${options.socks} ...`);
         socksProxy = new socks_proxy_agent_1.SocksProxyAgent(options.socks);
@@ -69,7 +69,7 @@ const fetchtHTML5Player = (webData) => __awaiter(void 0, void 0, void 0, functio
     const html5PlayerUrl = html5PlayerRes
         ? html5PlayerRes[1] || html5PlayerRes[2]
         : "";
-    const requestUrl = constants_1.youtubeUrls.base + html5PlayerUrl;
+    const requestUrl = constants_1.youtubeUrls.main + html5PlayerUrl;
     (0, logs_1.customLog)(`Fetching player js: ${requestUrl} ...`);
     const response = yield axios_1.default.get(requestUrl, {
         headers: webData.headers,

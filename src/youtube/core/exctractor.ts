@@ -1,11 +1,10 @@
 import * as cheerio from "cheerio";
-import { streamingDataFormats } from "@/helpers/constants";
-import { HTML_PAGE_SCRIPT_REGEX } from "@/regexp/regexp";
+import { HTML_PAGE_SCRIPT_REGEX } from "@/youtube/regexp/regexp";
 import { TFormat } from "../types/format";
 import { TPlayerResponse } from "../types/player-response";
 import { TSteamingDataFormat } from "../types/streaming-data";
 import { TAudio, TScripts } from "../types/audio";
-import ErrorModule from "./error";
+import ErrorModule from "../../helpers/error-module";
 import { desipherDownloadURL } from "./desipher";
 import vm from "vm";
 import { fetchtHTML5Player } from "./fetcher";
@@ -19,8 +18,8 @@ import {
     N_TRANSFORM_FUNC_NAME,
     N_TRANSFORM_NAME_REGEXPS,
     N_TRANSFORM_REGEXP,
-} from "@/regexp/regexp";
-import { TFetchHTMLResponse } from "@/types/player-response";
+} from "@/youtube/regexp/regexp";
+import { TFetchHTMLResponse } from "@/youtube/types/player-response";
 
 const exctractAudioInfo = (htmlContent: string, scripts: TScripts): TAudio => {
     const $ = cheerio.load(htmlContent);
@@ -73,7 +72,7 @@ const exctractFormats = (
     const streamingData = playerResponse.streamingData || {};
 
     try {
-        streamingDataFormats.forEach((dataType) => {
+        ["formats"].forEach((dataType) => {
             streamingData[dataType as TSteamingDataFormat].forEach((format) => {
                 if (format) {
                     const decodedFormat = desipherDownloadURL(

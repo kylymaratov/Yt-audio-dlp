@@ -1,13 +1,6 @@
 import "./path-register";
-import { TAudio } from "./types/audio";
-import { Readable } from "stream";
-import { TOptions } from "./types/options";
-declare class YoutubeDlp {
-    getAudioById(id: string, options?: TOptions): Promise<{
-        audio: TAudio;
-        stream: Readable;
-        headers: any;
-        options: TOptions;
-    }>;
+import Youtube from "./youtube/youtube";
+declare class AudioDownloader {
+    readonly youtube: Youtube;
 }
-export default YoutubeDlp;
+export default AudioDownloader;

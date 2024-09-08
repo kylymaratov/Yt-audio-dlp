@@ -34,7 +34,7 @@ import require$$5$2 from 'node:async_hooks';
 import require$$1$7 from 'node:console';
 import require$$3$3 from 'node:worker_threads';
 import require$$0$e from 'querystring';
-import require$$5$3 from 'vm';
+import require$$4$7 from 'vm';
 import require$$0$f from 'child_process';
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -308,6 +308,8 @@ const alias = (0, module_alias_1.addAliases)({
     "@": __dirname + "",
 });
 pathRegister.default = alias;
+
+var youtube = {};
 
 var checkRegexp = {};
 
@@ -19261,20 +19263,18 @@ var axios_1$1 = axios;
 var constants$a = {};
 
 Object.defineProperty(constants$a, "__esModule", { value: true });
-constants$a.ALLOWED_TRY_COUNT = constants$a.defaultOptions = constants$a.youtubeUrls = constants$a.streamingDataFormats = void 0;
-constants$a.streamingDataFormats = ["formats"];
+constants$a.defaultOptions = constants$a.youtubeUrls = void 0;
 constants$a.youtubeUrls = {
-    base: "https://www.youtube.com",
-    main: "https://www.youtube.com/watch?v=",
-    mobile: "https://youtu.be/",
-    androidPlayer: "https://youtubei.googleapis.com/youtubei/v1/player",
+    main: "https://www.youtube.com",
+    video: "https://www.youtube.com/watch?v=",
+    shortLink: "https://youtu.be/",
+    internalPlayer: "https://youtubei.googleapis.com/youtubei/v1/player",
 };
 constants$a.defaultOptions = {
     outputFormat: "webm",
     proxy: undefined,
     socks: undefined,
 };
-constants$a.ALLOWED_TRY_COUNT = 3;
 
 var userAgent = {};
 
@@ -24038,7 +24038,7 @@ ipv6.Address6 = Address6;
 Object.defineProperty(helpers$5, "__esModule", { value: true });
 helpers$5.ipToBuffer = helpers$5.int32ToIpv4 = helpers$5.ipv4ToInt32 = helpers$5.validateSocksClientChainOptions = helpers$5.validateSocksClientOptions = void 0;
 const util_1 = util$p;
-const constants_1$3 = constants$9;
+const constants_1$2 = constants$9;
 const stream$3 = require$$2$2;
 const ip_address_1 = ipAddress;
 const net$3 = require$$4$3;
@@ -24049,31 +24049,31 @@ const net$3 = require$$4$3;
  */
 function validateSocksClientOptions(options, acceptedCommands = ['connect', 'bind', 'associate']) {
     // Check SOCKs command option.
-    if (!constants_1$3.SocksCommand[options.command]) {
-        throw new util_1.SocksClientError(constants_1$3.ERRORS.InvalidSocksCommand, options);
+    if (!constants_1$2.SocksCommand[options.command]) {
+        throw new util_1.SocksClientError(constants_1$2.ERRORS.InvalidSocksCommand, options);
     }
     // Check SocksCommand for acceptable command.
     if (acceptedCommands.indexOf(options.command) === -1) {
-        throw new util_1.SocksClientError(constants_1$3.ERRORS.InvalidSocksCommandForOperation, options);
+        throw new util_1.SocksClientError(constants_1$2.ERRORS.InvalidSocksCommandForOperation, options);
     }
     // Check destination
     if (!isValidSocksRemoteHost(options.destination)) {
-        throw new util_1.SocksClientError(constants_1$3.ERRORS.InvalidSocksClientOptionsDestination, options);
+        throw new util_1.SocksClientError(constants_1$2.ERRORS.InvalidSocksClientOptionsDestination, options);
     }
     // Check SOCKS proxy to use
     if (!isValidSocksProxy(options.proxy)) {
-        throw new util_1.SocksClientError(constants_1$3.ERRORS.InvalidSocksClientOptionsProxy, options);
+        throw new util_1.SocksClientError(constants_1$2.ERRORS.InvalidSocksClientOptionsProxy, options);
     }
     // Validate custom auth (if set)
     validateCustomProxyAuth(options.proxy, options);
     // Check timeout
     if (options.timeout && !isValidTimeoutValue(options.timeout)) {
-        throw new util_1.SocksClientError(constants_1$3.ERRORS.InvalidSocksClientOptionsTimeout, options);
+        throw new util_1.SocksClientError(constants_1$2.ERRORS.InvalidSocksClientOptionsTimeout, options);
     }
     // Check existing_socket (if provided)
     if (options.existing_socket &&
         !(options.existing_socket instanceof stream$3.Duplex)) {
-        throw new util_1.SocksClientError(constants_1$3.ERRORS.InvalidSocksClientOptionsExistingSocket, options);
+        throw new util_1.SocksClientError(constants_1$2.ERRORS.InvalidSocksClientOptionsExistingSocket, options);
     }
 }
 helpers$5.validateSocksClientOptions = validateSocksClientOptions;
@@ -24084,52 +24084,52 @@ helpers$5.validateSocksClientOptions = validateSocksClientOptions;
 function validateSocksClientChainOptions(options) {
     // Only connect is supported when chaining.
     if (options.command !== 'connect') {
-        throw new util_1.SocksClientError(constants_1$3.ERRORS.InvalidSocksCommandChain, options);
+        throw new util_1.SocksClientError(constants_1$2.ERRORS.InvalidSocksCommandChain, options);
     }
     // Check destination
     if (!isValidSocksRemoteHost(options.destination)) {
-        throw new util_1.SocksClientError(constants_1$3.ERRORS.InvalidSocksClientOptionsDestination, options);
+        throw new util_1.SocksClientError(constants_1$2.ERRORS.InvalidSocksClientOptionsDestination, options);
     }
     // Validate proxies (length)
     if (!(options.proxies &&
         Array.isArray(options.proxies) &&
         options.proxies.length >= 2)) {
-        throw new util_1.SocksClientError(constants_1$3.ERRORS.InvalidSocksClientOptionsProxiesLength, options);
+        throw new util_1.SocksClientError(constants_1$2.ERRORS.InvalidSocksClientOptionsProxiesLength, options);
     }
     // Validate proxies
     options.proxies.forEach((proxy) => {
         if (!isValidSocksProxy(proxy)) {
-            throw new util_1.SocksClientError(constants_1$3.ERRORS.InvalidSocksClientOptionsProxy, options);
+            throw new util_1.SocksClientError(constants_1$2.ERRORS.InvalidSocksClientOptionsProxy, options);
         }
         // Validate custom auth (if set)
         validateCustomProxyAuth(proxy, options);
     });
     // Check timeout
     if (options.timeout && !isValidTimeoutValue(options.timeout)) {
-        throw new util_1.SocksClientError(constants_1$3.ERRORS.InvalidSocksClientOptionsTimeout, options);
+        throw new util_1.SocksClientError(constants_1$2.ERRORS.InvalidSocksClientOptionsTimeout, options);
     }
 }
 helpers$5.validateSocksClientChainOptions = validateSocksClientChainOptions;
 function validateCustomProxyAuth(proxy, options) {
     if (proxy.custom_auth_method !== undefined) {
         // Invalid auth method range
-        if (proxy.custom_auth_method < constants_1$3.SOCKS5_CUSTOM_AUTH_START ||
-            proxy.custom_auth_method > constants_1$3.SOCKS5_CUSTOM_AUTH_END) {
-            throw new util_1.SocksClientError(constants_1$3.ERRORS.InvalidSocksClientOptionsCustomAuthRange, options);
+        if (proxy.custom_auth_method < constants_1$2.SOCKS5_CUSTOM_AUTH_START ||
+            proxy.custom_auth_method > constants_1$2.SOCKS5_CUSTOM_AUTH_END) {
+            throw new util_1.SocksClientError(constants_1$2.ERRORS.InvalidSocksClientOptionsCustomAuthRange, options);
         }
         // Missing custom_auth_request_handler
         if (proxy.custom_auth_request_handler === undefined ||
             typeof proxy.custom_auth_request_handler !== 'function') {
-            throw new util_1.SocksClientError(constants_1$3.ERRORS.InvalidSocksClientOptionsCustomAuthOptions, options);
+            throw new util_1.SocksClientError(constants_1$2.ERRORS.InvalidSocksClientOptionsCustomAuthOptions, options);
         }
         // Missing custom_auth_response_size
         if (proxy.custom_auth_response_size === undefined) {
-            throw new util_1.SocksClientError(constants_1$3.ERRORS.InvalidSocksClientOptionsCustomAuthOptions, options);
+            throw new util_1.SocksClientError(constants_1$2.ERRORS.InvalidSocksClientOptionsCustomAuthOptions, options);
         }
         // Missing/invalid custom_auth_response_handler
         if (proxy.custom_auth_response_handler === undefined ||
             typeof proxy.custom_auth_response_handler !== 'function') {
-            throw new util_1.SocksClientError(constants_1$3.ERRORS.InvalidSocksClientOptionsCustomAuthOptions, options);
+            throw new util_1.SocksClientError(constants_1$2.ERRORS.InvalidSocksClientOptionsCustomAuthOptions, options);
         }
     }
 }
@@ -25328,14 +25328,14 @@ var __importStar$7 = (commonjsGlobal && commonjsGlobal.__importStar) || function
     __setModuleDefault$7(result, mod);
     return result;
 };
-var __importDefault$a = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+var __importDefault$b = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(dist$1, "__esModule", { value: true });
 dist$1.SocksProxyAgent = void 0;
 const socks_1 = build;
 const agent_base_1 = dist;
-const debug_1 = __importDefault$a(srcExports);
+const debug_1 = __importDefault$b(srcExports);
 const dns = __importStar$7(require$$3$2);
 const tls$1 = __importStar$7(require$$4$4);
 const url_1 = require$$0$4;
@@ -25498,13 +25498,13 @@ var __awaiter$3 = (commonjsGlobal && commonjsGlobal.__awaiter) || function (this
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault$9 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+var __importDefault$a = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(fetcher, "__esModule", { value: true });
 fetcher.fetchVideo = fetcher.fetchtHTML5Player = fetcher.fetchHtml = void 0;
-const axios_1 = __importDefault$9(axios_1$1);
-const constants_1$2 = constants$a;
+const axios_1 = __importDefault$a(axios_1$1);
+const constants_1$1 = constants$a;
 const regexp_1$2 = regexp;
 const user_agent_1 = userAgent;
 const stream_1$2 = require$$2$2;
@@ -25513,7 +25513,7 @@ const socks_proxy_agent_1 = dist$1;
 const fetchHtml = (id, options) => __awaiter$3(void 0, void 0, void 0, function* () {
     var _a;
     let socksProxy;
-    const url = constants_1$2.youtubeUrls.main + id + "&sttick=0";
+    const url = constants_1$1.youtubeUrls.video + id + "&sttick=0";
     if (options.socks) {
         (0, logs_1$1.customLog)(`Fetching html page: ${url} with socks ${options.socks} ...`);
         socksProxy = new socks_proxy_agent_1.SocksProxyAgent(options.socks);
@@ -25532,7 +25532,7 @@ const fetchHtml = (id, options) => __awaiter$3(void 0, void 0, void 0, function*
         "Accept-Language": "en-US,en;q=0.9",
         "Accept-Encoding": "gzip, deflate, br",
         "Cache-Control": "no-cache, max-age=0",
-        Origin: constants_1$2.youtubeUrls.main,
+        Origin: constants_1$1.youtubeUrls.main,
         Referer: url,
         Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
         Connection: "keep-alive",
@@ -25559,7 +25559,7 @@ const fetchtHTML5Player = (webData) => __awaiter$3(void 0, void 0, void 0, funct
     const html5PlayerUrl = html5PlayerRes
         ? html5PlayerRes[1] || html5PlayerRes[2]
         : "";
-    const requestUrl = constants_1$2.youtubeUrls.base + html5PlayerUrl;
+    const requestUrl = constants_1$1.youtubeUrls.main + html5PlayerUrl;
     (0, logs_1$1.customLog)(`Fetching player js: ${requestUrl} ...`);
     const response = yield axios_1.default.get(requestUrl, {
         headers: webData.headers,
@@ -27122,12 +27122,12 @@ var _escape = {};
 	
 } (_escape));
 
-var __importDefault$8 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+var __importDefault$9 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(encode, "__esModule", { value: true });
 encode.encodeNonAsciiHTML = encode.encodeHTML = void 0;
-var encode_html_js_1 = __importDefault$8(encodeHtml);
+var encode_html_js_1 = __importDefault$9(encodeHtml);
 var escape_js_1$1 = _escape;
 var htmlReplacer = /[\t\n!-,./:-@[-`\f{-}$\x80-\uFFFF]/g;
 /**
@@ -27660,13 +27660,13 @@ function renderComment(elem) {
     return "<!--".concat(elem.data, "-->");
 }
 
-var __importDefault$7 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+var __importDefault$8 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(stringify$3, "__esModule", { value: true });
 stringify$3.innerText = stringify$3.textContent = stringify$3.getText = stringify$3.getInnerHTML = stringify$3.getOuterHTML = void 0;
 var domhandler_1$a = lib$8;
-var dom_serializer_1$1 = __importDefault$7(lib$6);
+var dom_serializer_1$1 = __importDefault$8(lib$6);
 var domelementtype_1 = lib$7;
 /**
  * @category Stringify
@@ -30347,12 +30347,12 @@ var general = {};
 
 var attributes = {};
 
-var __importDefault$6 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+var __importDefault$7 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(attributes, "__esModule", { value: true });
 attributes.attributeRules = void 0;
-var boolbase_1$2 = __importDefault$6(boolbase);
+var boolbase_1$2 = __importDefault$7(boolbase);
 /**
  * All reserved characters in a regex, used for escaping.
  *
@@ -30668,12 +30668,12 @@ parse$6.parse = parse$5;
 
 var compile$2 = {};
 
-var __importDefault$5 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+var __importDefault$6 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(compile$2, "__esModule", { value: true });
 compile$2.generate = compile$2.compile = void 0;
-var boolbase_1$1 = __importDefault$5(boolbase);
+var boolbase_1$1 = __importDefault$6(boolbase);
 /**
  * Returns a function that checks if an elements index matches the given rule
  * highly optimized to return the fastest solution.
@@ -31482,13 +31482,13 @@ var __importStar$5 = (commonjsGlobal && commonjsGlobal.__importStar) || function
     __setModuleDefault$5(result, mod);
     return result;
 };
-var __importDefault$4 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+var __importDefault$5 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(compile$3, "__esModule", { value: true });
 compile$3.compileToken = compile$3.compileUnsafe = compile$3.compile = void 0;
 var css_what_1 = require$$0$1;
-var boolbase_1 = __importDefault$4(boolbase);
+var boolbase_1 = __importDefault$5(boolbase);
 var sort_js_1 = __importStar$5(sort);
 var general_js_1 = general;
 var subselects_js_1 = subselects;
@@ -44329,7 +44329,7 @@ Parser$2.Parser = Parser$1;
 	
 } (lib$1));
 
-var __importDefault$3 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+var __importDefault$4 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(loadParse, "__esModule", { value: true });
@@ -44337,7 +44337,7 @@ loadParse.load = void 0;
 const load_js_1 = load;
 const parse_js_1 = parse$4;
 const parse5_adapter_js_1 = parse5Adapter;
-const dom_serializer_1 = __importDefault$3(lib$6);
+const dom_serializer_1 = __importDefault$4(lib$6);
 const htmlparser2_1 = lib$1;
 const parse$2 = (0, parse_js_1.getParse)((content, options, isDocument, context) => options._useHtmlParser2
     ? (0, htmlparser2_1.parseDocument)(content, options)
@@ -83475,9 +83475,9 @@ var mimeType = class MIMEType {
 	
 } (commonjs$1));
 
-var error = {};
+var errorModule = {};
 
-Object.defineProperty(error, "__esModule", { value: true });
+Object.defineProperty(errorModule, "__esModule", { value: true });
 class ErrorModule extends Error {
     constructor(message, reason) {
         super(message);
@@ -83487,16 +83487,16 @@ class ErrorModule extends Error {
         Error.captureStackTrace(this, ErrorModule);
     }
 }
-error.default = ErrorModule;
+errorModule.default = ErrorModule;
 
 var desipher = {};
 
-var __importDefault$2 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+var __importDefault$3 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(desipher, "__esModule", { value: true });
 desipher.desipherDownloadURL = void 0;
-const querystring_1 = __importDefault$2(require$$0$e);
+const querystring_1 = __importDefault$3(require$$0$e);
 const regexp_1$1 = regexp;
 const desipherDownloadURL = (format, decipherScript, nTransformScript) => {
     const decipher = (url) => {
@@ -83564,17 +83564,16 @@ var __awaiter$2 = (commonjsGlobal && commonjsGlobal.__awaiter) || function (this
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault$1 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+var __importDefault$2 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exctractor, "__esModule", { value: true });
 exctractor.extractFunctions = exctractor.exctractAudioInfo = void 0;
 const cheerio = __importStar(commonjs$1);
-const constants_1$1 = constants$a;
 const regexp_1 = regexp;
-const error_1 = __importDefault$1(error);
+const error_module_1 = __importDefault$2(errorModule);
 const desipher_1 = desipher;
-const vm_1 = __importDefault$1(require$$5$3);
+const vm_1 = __importDefault$2(require$$4$7);
 const fetcher_1$2 = fetcher;
 const regexp_2 = regexp;
 const exctractAudioInfo = (htmlContent, scripts) => {
@@ -83589,16 +83588,16 @@ const exctractAudioInfo = (htmlContent, scripts) => {
                 return;
             playerResponse = JSON.parse(match[1]);
             if ((playerResponse === null || playerResponse === void 0 ? void 0 : playerResponse.playabilityStatus.status) === "LOGIN_REQUIRED") {
-                throw new error_1.default("Many requests, login required", playerResponse.playabilityStatus.status);
+                throw new error_module_1.default("Many requests, login required", playerResponse.playabilityStatus.status);
             }
             if ((playerResponse === null || playerResponse === void 0 ? void 0 : playerResponse.playabilityStatus.status) !== "OK") {
-                throw new error_1.default((playerResponse === null || playerResponse === void 0 ? void 0 : playerResponse.playabilityStatus.reason) ||
+                throw new error_module_1.default((playerResponse === null || playerResponse === void 0 ? void 0 : playerResponse.playabilityStatus.reason) ||
                     "Error while exctract palyer response", playerResponse === null || playerResponse === void 0 ? void 0 : playerResponse.playabilityStatus.status);
             }
         }
     });
     if (!playerResponse)
-        throw new error_1.default("Incorrect HTML, video information not found", "INCORRECT_HTML");
+        throw new error_module_1.default("Incorrect HTML, video information not found", "INCORRECT_HTML");
     const formats = exctractFormats(playerResponse, scripts) || [];
     const details = playerResponse.videoDetails;
     return { details, formats };
@@ -83608,7 +83607,7 @@ const exctractFormats = (playerResponse, scripts) => {
     const formats = [];
     const streamingData = playerResponse.streamingData || {};
     try {
-        constants_1$1.streamingDataFormats.forEach((dataType) => {
+        ["formats"].forEach((dataType) => {
             streamingData[dataType].forEach((format) => {
                 if (format) {
                     const decodedFormat = (0, desipher_1.desipherDownloadURL)(format, scripts.decipher, scripts.nTransform);
@@ -89086,12 +89085,12 @@ var __awaiter$1 = (commonjsGlobal && commonjsGlobal.__awaiter) || function (this
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+var __importDefault$1 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(stream, "__esModule", { value: true });
 stream.getAudioStream = getAudioStream;
-const fluent_ffmpeg_1 = __importDefault(fluentFfmpeg);
+const fluent_ffmpeg_1 = __importDefault$1(fluentFfmpeg);
 const stream_1$1 = require$$2$2;
 const fetcher_1$1 = fetcher;
 const options_1 = options;
@@ -89151,15 +89150,15 @@ var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisAr
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(dist$2, "__esModule", { value: true });
-
+Object.defineProperty(youtube, "__esModule", { value: true });
+youtube.Youtube = void 0;
 const check_regexp_1 = checkRegexp;
 const fetcher_1 = fetcher;
 const exctractor_1 = exctractor;
 const stream_1 = stream;
 const logs_1 = logs;
 const constants_1 = constants$a;
-class YoutubeDlp {
+class Youtube {
     getAudioById(id, options) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -89186,6 +89185,20 @@ class YoutubeDlp {
         });
     }
 }
-var _default = dist$2.default = YoutubeDlp;
+youtube.Youtube = Youtube;
+youtube.default = Youtube;
+
+var __importDefault = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(dist$2, "__esModule", { value: true });
+
+const youtube_1 = __importDefault(youtube);
+class AudioDownloader {
+    constructor() {
+        this.youtube = new youtube_1.default();
+    }
+}
+var _default = dist$2.default = AudioDownloader;
 
 export { _default as default };

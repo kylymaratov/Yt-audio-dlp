@@ -1,8 +1,8 @@
 import ffmpeg from "fluent-ffmpeg";
 import { PassThrough, Readable } from "stream";
-import { TAudio } from "@/types/audio";
+import { TAudio } from "@/youtube/types/audio";
 import { fetchVideo } from "./fetcher";
-import { TCodecs, TOutputFormats } from "@/types/options";
+import { TCodecs, TOutputFormats } from "@/youtube/types/options";
 
 function parseTimemark(timemark: string): number {
     const [hours, minutes, seconds] = timemark.split(":").map(Number);

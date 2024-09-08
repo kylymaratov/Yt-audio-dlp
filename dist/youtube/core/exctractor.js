@@ -37,13 +37,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.extractFunctions = exports.exctractAudioInfo = void 0;
 const cheerio = __importStar(require("cheerio"));
-const constants_1 = require("@/helpers/constants");
-const regexp_1 = require("@/regexp/regexp");
-const error_1 = __importDefault(require("./error"));
+const regexp_1 = require("@/youtube/regexp/regexp");
+const error_module_1 = __importDefault(require("../../helpers/error-module"));
 const desipher_1 = require("./desipher");
 const vm_1 = __importDefault(require("vm"));
 const fetcher_1 = require("./fetcher");
-const regexp_2 = require("@/regexp/regexp");
+const regexp_2 = require("@/youtube/regexp/regexp");
 const exctractAudioInfo = (htmlContent, scripts) => {
     const $ = cheerio.load(htmlContent);
     const scriptTags = $("script");
@@ -56,16 +55,16 @@ const exctractAudioInfo = (htmlContent, scripts) => {
                 return;
             playerResponse = JSON.parse(match[1]);
             if ((playerResponse === null || playerResponse === void 0 ? void 0 : playerResponse.playabilityStatus.status) === "LOGIN_REQUIRED") {
-                throw new error_1.default("Many requests, login required", playerResponse.playabilityStatus.status);
+                throw new error_module_1.default("Many requests, login required", playerResponse.playabilityStatus.status);
             }
             if ((playerResponse === null || playerResponse === void 0 ? void 0 : playerResponse.playabilityStatus.status) !== "OK") {
-                throw new error_1.default((playerResponse === null || playerResponse === void 0 ? void 0 : playerResponse.playabilityStatus.reason) ||
+                throw new error_module_1.default((playerResponse === null || playerResponse === void 0 ? void 0 : playerResponse.playabilityStatus.reason) ||
                     "Error while exctract palyer response", playerResponse === null || playerResponse === void 0 ? void 0 : playerResponse.playabilityStatus.status);
             }
         }
     });
     if (!playerResponse)
-        throw new error_1.default("Incorrect HTML, video information not found", "INCORRECT_HTML");
+        throw new error_module_1.default("Incorrect HTML, video information not found", "INCORRECT_HTML");
     const formats = exctractFormats(playerResponse, scripts) || [];
     const details = playerResponse.videoDetails;
     return { details, formats };
@@ -75,7 +74,7 @@ const exctractFormats = (playerResponse, scripts) => {
     const formats = [];
     const streamingData = playerResponse.streamingData || {};
     try {
-        constants_1.streamingDataFormats.forEach((dataType) => {
+        ["formats"].forEach((dataType) => {
             streamingData[dataType].forEach((format) => {
                 if (format) {
                     const decodedFormat = (0, desipher_1.desipherDownloadURL)(format, scripts.decipher, scripts.nTransform);

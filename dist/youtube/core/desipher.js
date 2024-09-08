@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.desipherDownloadURL = void 0;
 const querystring_1 = __importDefault(require("querystring"));
-const regexp_1 = require("@/regexp/regexp");
+const regexp_1 = require("@/youtube/regexp/regexp");
 const desipherDownloadURL = (format, decipherScript, nTransformScript) => {
     const decipher = (url) => {
         if (!decipherScript)

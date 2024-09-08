@@ -1,13 +1,13 @@
 import axios from "axios";
 import { youtubeUrls } from "@/helpers/constants";
-import { HTML5_PLAYER_REGEX } from "@/regexp/regexp";
+import { HTML5_PLAYER_REGEX } from "@/youtube/regexp/regexp";
 import { getRandomUserAgent } from "@/helpers/user-agent";
-import { TFetchHTMLResponse } from "@/types/player-response";
-import { TFormat } from "@/types/format";
+import { TFetchHTMLResponse } from "@/youtube/types/player-response";
+import { TFormat } from "@/youtube/types/format";
 import { Readable } from "stream";
 import { customLog } from "./logs";
 import { SocksProxyAgent } from "socks-proxy-agent";
-import { TOptions } from "@/types/options";
+import { TOptions } from "@/youtube/types/options";
 
 export const fetchHtml = async (
     id: string,
@@ -15,7 +15,7 @@ export const fetchHtml = async (
 ): Promise<TFetchHTMLResponse> => {
     let socksProxy;
 
-    const url = youtubeUrls.main + id + "&sttick=0";
+    const url = youtubeUrls.video + id + "&sttick=0";
 
     if (options.socks) {
         customLog(`Fetching html page: ${url} with socks ${options.socks} ...`);
@@ -66,7 +66,7 @@ export const fetchtHTML5Player = async (webData: TFetchHTMLResponse) => {
     const html5PlayerUrl = html5PlayerRes
         ? html5PlayerRes[1] || html5PlayerRes[2]
         : "";
-    const requestUrl = youtubeUrls.base + html5PlayerUrl;
+    const requestUrl = youtubeUrls.main + html5PlayerUrl;
 
     customLog(`Fetching player js: ${requestUrl} ...`);
 
