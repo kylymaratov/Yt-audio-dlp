@@ -11,7 +11,7 @@ import {
     N_TRANSFORM_FUNC_NAME,
     N_TRANSFORM_NAME_REGEXPS,
     N_TRANSFORM_REGEXP,
-} from "@/libs/youtube/constants";
+} from "@/libs/Youtube/constants";
 import { TFetchHTMLResponse } from "@/types/player-response-types";
 
 const matchRegex = (regex: string, str: string): RegExpMatchArray => {

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { youtubeUrls } from "@/constants/constants";
-import { HTML5_PLAYER_REGEX } from "@/libs/youtube/constants";
+import { HTML5_PLAYER_REGEX } from "@/libs/Youtube/constants";
 import { getRandomUserAgent } from "@/utils/get-random-useragent";
 import { TFetchHTMLResponse } from "@/types/player-response-types";
 import { logger } from "@/utils/lib-logger";

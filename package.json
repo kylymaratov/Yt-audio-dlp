@@ -1,18 +1,12 @@
 {
     "name": "audio-downloader",
-    "version": "1.1.6",
+    "version": "1.1.7",
     "main": "dist/index.cjs",
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
         "dist"
     ],
-    "exports": {
-        ".": {
-            "import": "./dist/index.js",
-            "require": "./dist/index.cjs"
-        }
-    },
     "scripts": {
         "dev": "nodemon --watch src src/index.ts",
         "build": "npx tsc -p . && npx rollup -c",
