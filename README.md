@@ -1,6 +1,6 @@
 # Audio-downloder
 
-Lib for download from music platforms audio in webm, mp3, wav, opus, ogg formats
+Node.js library for downloading songs from popular music platforms in formats webm, mp3, wav, opus, ogg formats
 
 ## Installation
 
