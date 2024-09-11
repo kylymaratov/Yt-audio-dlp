@@ -1,6 +1,6 @@
 import "./path-register";
-import Youtube from "./youtube/youtube";
-declare class AudioDownloader {
+import Youtube from "./libs/youtube/youtube-module";
+export default class AudioDownloader {
     readonly youtube: Youtube;
+    constructor();
 }
-export default AudioDownloader;

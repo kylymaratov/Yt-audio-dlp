@@ -1,9 +1,18 @@
 {
     "name": "audio-downloader",
-    "version": "1.0.1",
+    "version": "1.1.5",
     "main": "dist/index.cjs",
-    "module": "dist/index.mjs",
+    "module": "dist/index.js",
     "types": "dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "require": "./dist/index.cjs"
+        }
+    },
     "scripts": {
         "dev": "nodemon --watch src src/index.ts",
         "build": "npx tsc -p . && npx rollup -c",
@@ -23,7 +32,7 @@
     ],
     "author": "KLM",
     "license": "MIT",
-    "description": "Node.js lib for parsing data from Youtube",
+    "description": "Node.js lib for parsing audio from music platforms",
     "dependencies": {
         "axios": "^1.7.7",
         "cheerio": "^1.0.0",
@@ -40,6 +49,7 @@
         "@rollup/plugin-commonjs": "^26.0.1",
         "@rollup/plugin-json": "^6.1.0",
         "@rollup/plugin-node-resolve": "^15.2.3",
+        "@rollup/plugin-typescript": "^11.1.6",
         "@types/axios": "^0.14.0",
         "@types/cheerio": "^0.22.35",
         "@types/fluent-ffmpeg": "^2.1.26",
@@ -51,6 +61,7 @@
         "prettier": "^3.3.3",
         "rollup": "^4.21.0",
         "ts-jest": "^29.2.4",
-        "ts-node": "^10.9.2"
+        "ts-node": "^10.9.2",
+        "tslib": "^2.7.0"
     }
 }

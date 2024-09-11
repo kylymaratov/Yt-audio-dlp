@@ -1,8 +1,10 @@
 import "./path-register";
-import Youtube from "./youtube/youtube";
+import Youtube from "./libs/youtube/youtube-module";
 
-class AudioDownloader {
-    public readonly youtube: Youtube = new Youtube();
+export default class AudioDownloader {
+    public readonly youtube: Youtube;
+
+    constructor() {
+        this.youtube = new Youtube();
+    }
 }
-
-export default AudioDownloader;
