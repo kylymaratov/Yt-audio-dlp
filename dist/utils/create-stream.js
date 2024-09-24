@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAudioStream = getAudioStream;
+exports.createAudioStream = createAudioStream;
 const fluent_ffmpeg_1 = __importDefault(require("fluent-ffmpeg"));
 const axios_1 = __importDefault(require("axios"));
 const stream_1 = require("stream");
@@ -35,9 +35,7 @@ function parseTimemark(timemark) {
 function convertVideoToAudio(audio, videoStream, outputFormat) {
     return new Promise((resolve, reject) => {
         const temporaryBuffer = new stream_1.PassThrough();
-        const audioStream = new stream_1.Readable({
-            read(size) { },
-        });
+        const chunks = [];
         (0, fluent_ffmpeg_1.default)()
             .input(videoStream)
             .inputFormat("mp4")
@@ -55,22 +53,21 @@ function convertVideoToAudio(audio, videoStream, outputFormat) {
             .on("error", (err) => reject(err))
             .pipe(temporaryBuffer, { end: true });
         temporaryBuffer.on("end", () => {
-            audioStream.push(null);
             process.stdout.write("\r\x1b[2K");
-            resolve(audioStream);
+            resolve(Buffer.concat(chunks));
         });
         temporaryBuffer.on("data", (chunk) => {
-            audioStream.push(chunk);
+            chunks.push(chunk);
         });
         temporaryBuffer.on("error", (err) => {
             reject(err);
         });
     });
 }
-function getAudioStream(audio, headers, outputFormat) {
+function createAudioStream(audio, headers, outputFormat) {
     return __awaiter(this, void 0, void 0, function* () {
         const videoStream = yield fetchVideo(audio.formats[0], headers);
-        const audioStream = yield convertVideoToAudio(audio, videoStream, outputFormat);
-        return audioStream;
+        const buffer = yield convertVideoToAudio(audio, videoStream, outputFormat);
+        return buffer;
     });
 }

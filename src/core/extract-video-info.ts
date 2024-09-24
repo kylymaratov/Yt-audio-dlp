@@ -1,10 +1,10 @@
 import * as cheerio from "cheerio";
 import { ErrorModule } from "@/utils/throw-error";
-import { HTML_PAGE_SCRIPT_REGEX } from "@/libs/Youtube/constants";
-import { TFormat } from "../../../types/format-types";
-import { TPlayerResponse } from "../../../types/player-response-types";
-import { TSteamingDataFormat } from "../../../types/streaming-data-types";
-import { TAudio, TScripts } from "../../../types/audio-types";
+import { HTML_PAGE_SCRIPT_REGEX } from "@/regexp";
+import { TFormat } from "@/types/format-types";
+import { TPlayerResponse } from "@/types/player-response-types";
+import { TSteamingDataFormat } from "@/types/streaming-data-types";
+import { TAudio, TScripts } from "@/types/audio-types";
 import { desipherDownloadURL } from "./desipher-video-urls";
 
 const exctractVideoInfo = (htmlContent: string, scripts: TScripts): TAudio => {

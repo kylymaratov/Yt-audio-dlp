@@ -1,4 +1,4 @@
-# Audio-downloder
+# Yt-audio-dlp
 
 Node.js library for downloading songs from popular music platforms in formats webm, mp3, wav, opus, ogg formats
 

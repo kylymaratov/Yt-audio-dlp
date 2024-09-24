@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.extractDesipherFunctions = void 0;
 const vm_1 = __importDefault(require("vm"));
 const fetch_html_page_1 = require("./fetch-html-page");
-const constants_1 = require("@/libs/youtube/constants");
+const regexp_1 = require("@/regexp");
 const matchRegex = (regex, str) => {
     const match = str.match(new RegExp(regex, "s"));
     if (!match)
@@ -45,10 +45,10 @@ const getFuncName = (body, regexps) => {
 };
 const extractDecipherFunc = (body) => {
     try {
-        const helperObject = matchFirst(constants_1.HELPER_REGEXP, body);
-        const decipherFunc = matchFirst(constants_1.DECIPHER_REGEXP, body);
-        const resultFunc = `var ${constants_1.DECIPHER_FUNC_NAME}=${decipherFunc};`;
-        const callerFunc = `${constants_1.DECIPHER_FUNC_NAME}(${constants_1.DECIPHER_ARGUMENT});`;
+        const helperObject = matchFirst(regexp_1.HELPER_REGEXP, body);
+        const decipherFunc = matchFirst(regexp_1.DECIPHER_REGEXP, body);
+        const resultFunc = `var ${regexp_1.DECIPHER_FUNC_NAME}=${decipherFunc};`;
+        const callerFunc = `${regexp_1.DECIPHER_FUNC_NAME}(${regexp_1.DECIPHER_ARGUMENT});`;
         return helperObject + resultFunc + callerFunc;
     }
     catch (_a) {
@@ -57,13 +57,13 @@ const extractDecipherFunc = (body) => {
 };
 const extractDecipherWithName = (body) => {
     try {
-        const decipherFuncName = getFuncName(body, constants_1.DECIPHER_NAME_REGEXPS);
+        const decipherFuncName = getFuncName(body, regexp_1.DECIPHER_NAME_REGEXPS);
         const funcPattern = `(${decipherFuncName.replace(/\$/g, "\\$")}=function\\([a-zA-Z0-9_]+\\)\\{.+?\\})`;
         const decipherFunc = `var ${matchGroup1(funcPattern, body)};`;
         const helperObjectName = matchGroup1(";([A-Za-z0-9_\\$]{2,})\\.\\w+\\(", decipherFunc);
         const helperPattern = `(var ${helperObjectName.replace(/\$/g, "\\$")}=\\{[\\s\\S]+?\\}\\};)`;
         const helperObject = matchGroup1(helperPattern, body);
-        const callerFunc = `${decipherFuncName}(${constants_1.DECIPHER_ARGUMENT});`;
+        const callerFunc = `${decipherFuncName}(${regexp_1.DECIPHER_ARGUMENT});`;
         return helperObject + decipherFunc + callerFunc;
     }
     catch (_a) {
@@ -90,9 +90,9 @@ const extractDecipher = (body) => {
 };
 const extractNTransformFunc = (body) => {
     try {
-        const nFunc = matchFirst(constants_1.N_TRANSFORM_REGEXP, body);
-        const resultFunc = `var ${constants_1.N_TRANSFORM_FUNC_NAME}=${nFunc}`;
-        const callerFunc = `${constants_1.N_TRANSFORM_FUNC_NAME}(${constants_1.N_ARGUMENT});`;
+        const nFunc = matchFirst(regexp_1.N_TRANSFORM_REGEXP, body);
+        const resultFunc = `var ${regexp_1.N_TRANSFORM_FUNC_NAME}=${nFunc}`;
+        const callerFunc = `${regexp_1.N_TRANSFORM_FUNC_NAME}(${regexp_1.N_ARGUMENT});`;
         return resultFunc + callerFunc;
     }
     catch (_a) {
@@ -101,12 +101,12 @@ const extractNTransformFunc = (body) => {
 };
 const extractNTransformWithName = (body) => {
     try {
-        const nFuncName = getFuncName(body, constants_1.N_TRANSFORM_NAME_REGEXPS);
+        const nFuncName = getFuncName(body, regexp_1.N_TRANSFORM_NAME_REGEXPS);
         const funcPattern = `(${nFuncName.replace(/\$/g, "\\$")
         // eslint-disable-next-line max-len
         }=\\s*function([\\S\\s]*?\\}\\s*return (([\\w$]+?\\.join\\(""\\))|(Array\\.prototype\\.join\\.call\\([\\w$]+?,[\\n\\s]*(("")|(\\("",""\\)))\\)))\\s*\\}))`;
         const nTransformFunc = `var ${matchGroup1(funcPattern, body)};`;
-        const callerFunc = `${nFuncName}(${constants_1.N_ARGUMENT});`;
+        const callerFunc = `${nFuncName}(${regexp_1.N_ARGUMENT});`;
         return nTransformFunc + callerFunc;
     }
     catch (_a) {

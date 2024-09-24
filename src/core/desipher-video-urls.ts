@@ -1,7 +1,7 @@
 import vm from "vm";
 import querystring from "querystring";
 import { TFormat } from "@/types/format-types";
-import { DECIPHER_ARGUMENT, N_ARGUMENT } from "@/libs/Youtube/constants";
+import { DECIPHER_ARGUMENT, N_ARGUMENT } from "@/regexp";
 
 const desipherDownloadURL = (
     format: TFormat,

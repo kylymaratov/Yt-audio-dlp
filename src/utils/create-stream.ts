@@ -27,12 +27,10 @@ function convertVideoToAudio(
     audio: TAudio,
     videoStream: Readable,
     outputFormat: TOutputFormats
-): Promise<Readable> {
+): Promise<Buffer> {
     return new Promise((resolve, reject) => {
         const temporaryBuffer = new PassThrough();
-        const audioStream = new Readable({
-            read(size) {},
-        });
+        const chunks: Buffer[] = [];
 
         ffmpeg()
             .input(videoStream)
@@ -55,13 +53,12 @@ function convertVideoToAudio(
             .pipe(temporaryBuffer, { end: true });
 
         temporaryBuffer.on("end", () => {
-            audioStream.push(null);
             process.stdout.write("\r\x1b[2K");
-            resolve(audioStream);
+            resolve(Buffer.concat(chunks));
         });
 
         temporaryBuffer.on("data", (chunk) => {
-            audioStream.push(chunk);
+            chunks.push(chunk);
         });
 
         temporaryBuffer.on("error", (err) => {
@@ -70,20 +67,16 @@ function convertVideoToAudio(
     });
 }
 
-async function getAudioStream(
+async function createAudioStream(
     audio: TAudio,
     headers: any,
     outputFormat: TOutputFormats
-): Promise<Readable> {
+): Promise<Buffer> {
     const videoStream = await fetchVideo(audio.formats[0], headers);
 
-    const audioStream = await convertVideoToAudio(
-        audio,
-        videoStream,
-        outputFormat
-    );
+    const buffer = await convertVideoToAudio(audio, videoStream, outputFormat);
 
-    return audioStream;
+    return buffer;
 }
 
-export { getAudioStream };
+export { createAudioStream };

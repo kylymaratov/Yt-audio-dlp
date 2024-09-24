@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.desipherDownloadURL = void 0;
 const querystring_1 = __importDefault(require("querystring"));
-const constants_1 = require("@/libs/youtube/constants");
+const regexp_1 = require("@/regexp");
 const desipherDownloadURL = (format, decipherScript, nTransformScript) => {
     const decipher = (url) => {
         if (!decipherScript)
@@ -15,7 +15,7 @@ const desipherDownloadURL = (format, decipherScript, nTransformScript) => {
             return args.url;
         const components = new URL(decodeURIComponent(args.url));
         const context = {};
-        context[constants_1.DECIPHER_ARGUMENT] = decodeURIComponent(args.s);
+        context[regexp_1.DECIPHER_ARGUMENT] = decodeURIComponent(args.s);
         const sig = decipherScript.runInNewContext(context);
         components.searchParams.set("sig", sig);
         return components.toString();
@@ -28,7 +28,7 @@ const desipherDownloadURL = (format, decipherScript, nTransformScript) => {
         if (!n)
             return url;
         const context = {};
-        context[constants_1.N_ARGUMENT] = n;
+        context[regexp_1.N_ARGUMENT] = n;
         const ncode = nTransformScript.runInNewContext(context);
         components.searchParams.set("n", ncode);
         return components.toString();

@@ -1,5 +1,5 @@
 import vm from "vm";
-import { TScripts } from "../../../types/audio-types";
+import { TScripts } from "@/types/audio-types";
 import { fetchtHTML5Player } from "./fetch-html-page";
 import {
     DECIPHER_ARGUMENT,
@@ -11,7 +11,7 @@ import {
     N_TRANSFORM_FUNC_NAME,
     N_TRANSFORM_NAME_REGEXPS,
     N_TRANSFORM_REGEXP,
-} from "@/libs/Youtube/constants";
+} from "@/regexp";
 import { TFetchHTMLResponse } from "@/types/player-response-types";
 
 const matchRegex = (regex: string, str: string): RegExpMatchArray => {

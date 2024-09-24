@@ -26,7 +26,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.exctractVideoInfo = void 0;
 const cheerio = __importStar(require("cheerio"));
 const throw_error_1 = require("@/utils/throw-error");
-const constants_1 = require("@/libs/youtube/constants");
+const regexp_1 = require("@/regexp");
 const desipher_video_urls_1 = require("./desipher-video-urls");
 const exctractVideoInfo = (htmlContent, scripts) => {
     const $ = cheerio.load(htmlContent);
@@ -35,7 +35,7 @@ const exctractVideoInfo = (htmlContent, scripts) => {
     scriptTags.each((_, scriptTag) => {
         const scriptContent = $(scriptTag).html();
         if (scriptContent) {
-            const match = scriptContent.match(constants_1.HTML_PAGE_SCRIPT_REGEX);
+            const match = scriptContent.match(regexp_1.HTML_PAGE_SCRIPT_REGEX);
             if (!match)
                 return;
             playerResponse = JSON.parse(match[1]);

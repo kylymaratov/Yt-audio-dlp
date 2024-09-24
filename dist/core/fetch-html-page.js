@@ -15,8 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.fetchtHTML5Player = exports.fetchHtmlPage = void 0;
 const axios_1 = __importDefault(require("axios"));
 const constants_1 = require("@/constants/constants");
-const constants_2 = require("@/libs/youtube/constants");
-const get_random_useragent_1 = require("@/utils/get-random-useragent");
+const regexp_1 = require("@/regexp");
+const get_user_agent_1 = require("@/utils/get-user-agent");
 const lib_logger_1 = require("@/utils/lib-logger");
 const socks_proxy_agent_1 = require("socks-proxy-agent");
 const fetchHtmlPage = (id, options) => __awaiter(void 0, void 0, void 0, function* () {
@@ -35,7 +35,7 @@ const fetchHtmlPage = (id, options) => __awaiter(void 0, void 0, void 0, functio
     else {
         (0, lib_logger_1.logger)(`Fetching html page: ${url}...`);
     }
-    const userAgent = (0, get_random_useragent_1.getRandomUserAgent)();
+    const userAgent = (0, get_user_agent_1.getRandomUserAgent)();
     const headers = {
         "User-Agent": userAgent,
         "Accept-Language": "en-US,en;q=0.9",
@@ -64,7 +64,7 @@ const fetchHtmlPage = (id, options) => __awaiter(void 0, void 0, void 0, functio
 });
 exports.fetchHtmlPage = fetchHtmlPage;
 const fetchtHTML5Player = (webData) => __awaiter(void 0, void 0, void 0, function* () {
-    const html5PlayerRes = constants_2.HTML5_PLAYER_REGEX.exec(webData.htmlContent);
+    const html5PlayerRes = regexp_1.HTML5_PLAYER_REGEX.exec(webData.htmlContent);
     const html5PlayerUrl = html5PlayerRes
         ? html5PlayerRes[1] || html5PlayerRes[2]
         : "";
