@@ -1,6 +1,6 @@
 {
     "name": "yt-audio-dlp",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
@@ -38,7 +38,7 @@
         "socks-proxy-agent": "^8.0.4"
     },
     "repository": {
-        "url": "https://github.com/kylymaratov/yt-auido-dlp.git",
+        "url": "https://github.com/kylymaratov/yt-audio-dlp.git",
         "type": "github"
     },
     "devDependencies": {
