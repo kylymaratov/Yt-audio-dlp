@@ -63,12 +63,6 @@ npm i -g yt-audio-dlp
 yt-audio-dlp -u "https://www.youtube.com/watch?v=MfFbdLXAL9U" -f mp3
 ```
 
-#### for Windows
-
-```
-npx yt-audio-dlp -u "https://www.youtube.com/watch?v=MfFbdLXAL9U" -f mp3
-```
-
 ## Important!
 
 This package requires installation ffmpeg -> https://www.ffmpeg.org/
