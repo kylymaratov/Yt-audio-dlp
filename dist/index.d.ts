@@ -6,7 +6,6 @@ export declare class YoutubeAudio {
         audio: TAudio;
         buffer: Buffer;
         headers: any;
-        options: TOptions;
     }>;
 }
 export default YoutubeAudio;

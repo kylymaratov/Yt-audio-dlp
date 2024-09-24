@@ -17,23 +17,23 @@ const axios_1 = __importDefault(require("axios"));
 const constants_1 = require("@/constants/constants");
 const regexp_1 = require("@/regexp");
 const get_user_agent_1 = require("@/utils/get-user-agent");
-const lib_logger_1 = require("@/utils/lib-logger");
+const logger_1 = require("@/utils/logger");
 const socks_proxy_agent_1 = require("socks-proxy-agent");
 const fetchHtmlPage = (id, options) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     let socksProxy;
     const url = constants_1.youtubeUrls.video + id + "&sttick=0";
     if (options.socks) {
-        (0, lib_logger_1.logger)(`Fetching html page: ${url} with socks ${options.socks} ...`);
+        (0, logger_1.logger)(`Fetching html page: ${url} with socks ${options.socks} ...`);
         socksProxy = new socks_proxy_agent_1.SocksProxyAgent(options.socks);
         options.proxy = undefined;
     }
     else if (options.proxy) {
         options.socks = undefined;
-        (0, lib_logger_1.logger)(`Fetching html page: ${url} with proxy ${options.proxy.host} ...`);
+        (0, logger_1.logger)(`Fetching html page: ${url} with proxy ${options.proxy.host} ...`);
     }
     else {
-        (0, lib_logger_1.logger)(`Fetching html page: ${url}...`);
+        (0, logger_1.logger)(`Fetching html page: ${url}...`);
     }
     const userAgent = (0, get_user_agent_1.getRandomUserAgent)();
     const headers = {
@@ -69,7 +69,7 @@ const fetchtHTML5Player = (webData) => __awaiter(void 0, void 0, void 0, functio
         ? html5PlayerRes[1] || html5PlayerRes[2]
         : "";
     const requestUrl = constants_1.youtubeUrls.main + html5PlayerUrl;
-    (0, lib_logger_1.logger)(`Fetching player js: ${requestUrl} ...`);
+    (0, logger_1.logger)(`Fetching player js: ${requestUrl} ...`);
     const response = yield axios_1.default.get(requestUrl, {
         headers: webData.headers,
         proxy: webData.proxy,

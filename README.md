@@ -1,32 +1,68 @@
 # Yt-audio-dlp
 
-Node.js library for downloading songs from popular music platforms in formats webm, mp3, wav, opus, ogg formats
+![Logo](https://upload.wikimedia.org/wikipedia/commons/2/20/Youtube-to-mp3.png)
+
+Node.js library for downloading songs from Youtube in webm, mp3, wav, opus, ogg formats
 
 ## Installation
 
-`npm install audio-downloader`
+`npm install yt-audio-dlp`
 
-## Usage
+Make sure you're installing the latest version of yt-auido-dlp to keep up with the latest fixes.
 
-### From Youtube
+## Example
 
+```js
+import YoutubeAudio from "yt-audio-dlp";
+
+const youtubeAudio = new YoutubeAudio();
+
+(async function () {
+    try {
+        const { audio, buffer, headers, options } =
+            await youtubeaudio.getAudioById(/ VideoId /, {
+                outputFormat: "mp3",
+            });
+    } catch (error) {
+        console.error(error);
+    }
+})();
 ```
-import AudioDownloder from "audio-downloader";
 
-const audioDownloder = new AudioDownloder();
+## Proxy & Tor network support
 
-(async function() {
-   try {
-    const {audio, stream, headers, options } = await audioDownloder.youtube.getAudioById(/ VideoId /,
+```js
+import YoutubeAudio from "yt-audio-dlp";
+
+const youtubeAudio = new YoutubeAudio();
+
+const { audio, buffer, headers, options } = await youtubeaudio.getAudioById(
+    / VideoId /,
     {
-      outputFormat: "mp3",
-      socks?: "Socks proxy link",
-      proxy?: {host: "HOST" port: "PORT", auth?: {username:"", password: ""}}
-    });
+        outputFormat: "webm",
+        socks: "socks5://127.0.0.1:9050",
+        proxy: {
+            host: / host /,
+            port: / port /
+            auth: {
+                username: / if required /,
+                password: / if required /
+            }
+        }
+    }
+);
+```
 
-  } catch (err) {
-    console.error(err);
-  }
-})()
+## Command-line usage
 
 ```
+npm i -g yt-audio-dlp
+```
+
+```
+yt-audio-dlp -u "https://www.youtube.com/watch?v=MfFbdLXAL9U" -f mp3
+```
+
+## Important!
+
+This package requires installation ffmpeg -> https://www.ffmpeg.org/

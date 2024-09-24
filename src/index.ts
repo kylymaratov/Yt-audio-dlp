@@ -1,12 +1,11 @@
 import "./path-register";
 
-import { Readable } from "stream";
 import { checkVideoId } from "./scripts/check-video-id";
 import { fetchHtmlPage } from "./core/fetch-html-page";
 import { exctractVideoInfo } from "./core/extract-video-info";
 import { TAudio } from "./types/audio-types";
-import { createAudioStream } from "./utils/create-stream";
-import { clearLogger } from ".//utils/lib-logger";
+import { createAudioBuffer } from "./utils/create-audio-buffer";
+import { clearLogger } from "./utils/logger";
 import { TOptions } from "./types/options-types";
 import { defaultOptions } from ".//constants/constants";
 import { extractDesipherFunctions } from "./core/extract-desipher-scripts";
@@ -19,7 +18,6 @@ export class YoutubeAudio {
         audio: TAudio;
         buffer: Buffer;
         headers: any;
-        options: TOptions;
     }> {
         try {
             if (!checkVideoId(id)) throw new Error("Invalid video id");
@@ -31,17 +29,16 @@ export class YoutubeAudio {
 
             const video = exctractVideoInfo(webData.htmlContent, scripts);
 
-            const buffer = await createAudioStream(
+            const buffer = await createAudioBuffer(
                 video,
                 webData.headers,
-                options.outputFormat || "webm"
+                options
             );
 
             return {
                 audio: video,
                 buffer,
                 headers: webData.headers,
-                options,
             };
         } catch (e) {
             throw e;

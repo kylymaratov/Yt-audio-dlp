@@ -3,7 +3,7 @@ import axios from "axios";
 
 import { PassThrough, Readable } from "stream";
 import { TAudio } from "@/types/audio-types";
-import { TCodecs, TOutputFormats } from "@/types/options-types";
+import { TCodecs, TOptions, TOutputFormats } from "@/types/options-types";
 import { TFormat } from "@/types/format-types";
 
 async function fetchVideo(format: TFormat, headers: any): Promise<Readable> {
@@ -67,16 +67,20 @@ function convertVideoToAudio(
     });
 }
 
-async function createAudioStream(
+async function createAudioBuffer(
     audio: TAudio,
     headers: any,
-    outputFormat: TOutputFormats
+    options: TOptions
 ): Promise<Buffer> {
     const videoStream = await fetchVideo(audio.formats[0], headers);
 
-    const buffer = await convertVideoToAudio(audio, videoStream, outputFormat);
+    const data = await convertVideoToAudio(
+        audio,
+        videoStream,
+        options.outputFormat || "mp3"
+    );
 
-    return buffer;
+    return data;
 }
 
-export { createAudioStream };
+export { createAudioBuffer };

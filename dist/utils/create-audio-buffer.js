@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createAudioStream = createAudioStream;
+exports.createAudioBuffer = createAudioBuffer;
 const fluent_ffmpeg_1 = __importDefault(require("fluent-ffmpeg"));
 const axios_1 = __importDefault(require("axios"));
 const stream_1 = require("stream");
@@ -64,10 +64,10 @@ function convertVideoToAudio(audio, videoStream, outputFormat) {
         });
     });
 }
-function createAudioStream(audio, headers, outputFormat) {
+function createAudioBuffer(audio, headers, options) {
     return __awaiter(this, void 0, void 0, function* () {
         const videoStream = yield fetchVideo(audio.formats[0], headers);
-        const buffer = yield convertVideoToAudio(audio, videoStream, outputFormat);
-        return buffer;
+        const data = yield convertVideoToAudio(audio, videoStream, options.outputFormat || "mp3");
+        return data;
     });
 }

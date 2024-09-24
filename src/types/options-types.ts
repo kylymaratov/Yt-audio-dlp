@@ -10,7 +10,7 @@ export interface TOptions {
         };
     };
 }
-
+export type OutputType = "stream" | "buffer";
 export type TOutputFormats = "webm" | "mp3" | "wav" | "opus" | "ogg";
 
 export enum TCodecs {

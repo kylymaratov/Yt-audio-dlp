@@ -6,6 +6,7 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "strict": true,
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "outDir": "dist",
     "declaration": true,

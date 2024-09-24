@@ -14,8 +14,8 @@ require("./path-register");
 const check_video_id_1 = require("./scripts/check-video-id");
 const fetch_html_page_1 = require("./core/fetch-html-page");
 const extract_video_info_1 = require("./core/extract-video-info");
-const create_stream_1 = require("./utils/create-stream");
-const lib_logger_1 = require(".//utils/lib-logger");
+const create_audio_buffer_1 = require("./utils/create-audio-buffer");
+const logger_1 = require("./utils/logger");
 const constants_1 = require(".//constants/constants");
 const extract_desipher_scripts_1 = require("./core/extract-desipher-scripts");
 class YoutubeAudio {
@@ -28,19 +28,18 @@ class YoutubeAudio {
                 const webData = yield (0, fetch_html_page_1.fetchHtmlPage)(id, options);
                 const scripts = yield (0, extract_desipher_scripts_1.extractDesipherFunctions)(webData);
                 const video = (0, extract_video_info_1.exctractVideoInfo)(webData.htmlContent, scripts);
-                const buffer = yield (0, create_stream_1.createAudioStream)(video, webData.headers, options.outputFormat || "webm");
+                const buffer = yield (0, create_audio_buffer_1.createAudioBuffer)(video, webData.headers, options);
                 return {
                     audio: video,
                     buffer,
                     headers: webData.headers,
-                    options,
                 };
             }
             catch (e) {
                 throw e;
             }
             finally {
-                (0, lib_logger_1.clearLogger)();
+                (0, logger_1.clearLogger)();
             }
         });
     }
