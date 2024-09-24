@@ -6,6 +6,7 @@ import { Command } from "commander";
 import { createWriteStream } from "fs";
 import { join } from "path";
 import { extractVideoId } from "./scripts/extract-video-id";
+import { transliterate } from "./utils/translate-title";
 
 const program = new Command();
 
@@ -30,22 +31,31 @@ program
             const { buffer, audio } = await youtubeAudio.getAudioById(id, {
                 outputFormat: format,
             });
+            const currentDirectory = process.cwd();
+
+            const title = transliterate(audio.details.title);
+
+            const outputPath = join(
+                currentDirectory,
+                `${title} - ${audio.details.videoId}.${format}`
+            );
+
+            const writeStream = createWriteStream(outputPath);
 
             const stream = Readable.from(buffer);
 
-            const outputPath = createWriteStream(
-                join(
-                    process.cwd(),
-                    `${audio.details.title} - ${audio.details.videoId}.${format}`
-                )
-            );
+            stream.pipe(writeStream);
 
-            stream.pipe(outputPath);
+            writeStream.on("finish", () => {
+                console.info(`File Saved to ${outputPath}`);
+            });
 
-            console.info(`${audio.details.title} download complete!`);
+            writeStream.on("error", (error) => {
+                console.error("Error writing file:", (error as Error).message);
+            });
         } catch (error) {
             console.error("Error:", (error as Error).message);
-        } finally {
+
             process.exit(1);
         }
     });

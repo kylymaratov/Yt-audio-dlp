@@ -19,6 +19,7 @@ const commander_1 = require("commander");
 const fs_1 = require("fs");
 const path_1 = require("path");
 const extract_video_id_1 = require("./scripts/extract-video-id");
+const translate_title_1 = require("./utils/translate-title");
 const program = new commander_1.Command();
 program
     .version("1.0.5")
@@ -36,15 +37,21 @@ program
         const { buffer, audio } = yield youtubeAudio.getAudioById(id, {
             outputFormat: format,
         });
+        const currentDirectory = process.cwd();
+        const title = (0, translate_title_1.transliterate)(audio.details.title);
+        const outputPath = (0, path_1.join)(currentDirectory, `${title} - ${audio.details.videoId}.${format}`);
+        const writeStream = (0, fs_1.createWriteStream)(outputPath);
         const stream = stream_1.Readable.from(buffer);
-        const outputPath = (0, fs_1.createWriteStream)((0, path_1.join)(process.cwd(), `${audio.details.title} - ${audio.details.videoId}.${format}`));
-        stream.pipe(outputPath);
-        console.info(`${audio.details.title} download complete!`);
+        stream.pipe(writeStream);
+        writeStream.on("finish", () => {
+            console.info(`File Saved to ${outputPath}`);
+        });
+        writeStream.on("error", (error) => {
+            console.error("Error writing file:", error.message);
+        });
     }
     catch (error) {
         console.error("Error:", error.message);
-    }
-    finally {
         process.exit(1);
     }
 }));
