@@ -33,19 +33,19 @@ program
 
             const stream = Readable.from(buffer);
 
-            stream.pipe(
-                createWriteStream(
-                    join(
-                        __dirname,
-                        `${audio.details.title} - ${audio.details.videoId}.${format}`
-                    )
+            const outputPath = createWriteStream(
+                join(
+                    process.cwd(),
+                    `${audio.details.title} - ${audio.details.videoId}.${format}`
                 )
             );
+
+            stream.pipe(outputPath);
 
             console.info(`${audio.details.title} download complete!`);
         } catch (error) {
             console.error("Error:", (error as Error).message);
-
+        } finally {
             process.exit(1);
         }
     });

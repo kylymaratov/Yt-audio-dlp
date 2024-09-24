@@ -37,11 +37,14 @@ program
             outputFormat: format,
         });
         const stream = stream_1.Readable.from(buffer);
-        stream.pipe((0, fs_1.createWriteStream)((0, path_1.join)(__dirname, `${audio.details.title} - ${audio.details.videoId}.${format}`)));
+        const outputPath = (0, fs_1.createWriteStream)((0, path_1.join)(process.cwd(), `${audio.details.title} - ${audio.details.videoId}.${format}`));
+        stream.pipe(outputPath);
         console.info(`${audio.details.title} download complete!`);
     }
     catch (error) {
         console.error("Error:", error.message);
+    }
+    finally {
         process.exit(1);
     }
 }));
